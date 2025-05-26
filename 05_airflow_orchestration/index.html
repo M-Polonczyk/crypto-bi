@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://M-Polonczyk.github.io/crypto-bi/05_airflow_orchestration/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Airflow Orchestration - Crypto BI</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Crypto BI</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../01_architecture/" class="nav-link">System Architecture</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../02_data_sources/" class="nav-link">Data Sources</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../03_ingestion_pipeline/" class="nav-link">Ingestion Pipeline</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">dbt Data Modeling</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href=".." class="dropdown-item">Home</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_01_dimensional_model/" class="dropdown-item">Dimensional Model</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_02_sources/" class="dropdown-item">Sources</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_03_staging_layer.md" class="dropdown-item">Staging Layer</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_04_marts_layer/" class="dropdown-item">Marts Layer</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_05_testing_and_quality.md" class="dropdown-item">Testing and Quality</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">Airflow Orchestration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../06_powerbi_integration/" class="nav-link">Power BI Integration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../07_development_guide/" class="nav-link">Development Guide</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../08_troubleshooting/" class="nav-link">Troubleshooting</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../04_dbt_data_modeling/04_04_marts_layer/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../06_powerbi_integration/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/M-Polonczyk/crypto-bi/edit/main/docs/05_airflow_orchestration.md" class="nav-link">Edit on crypto-bi
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#apache-airflow-orchestration" class="nav-link">Apache Airflow Orchestration</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#core-airflow-concepts-utilized" class="nav-link">Core Airflow Concepts Utilized</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#main-elt-dag-structure-crypto_data_ingestion_pipeline_vxpy" class="nav-link">Main ELT DAG Structure (crypto_data_ingestion_pipeline_vX.py)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#configuration-and-environment" class="nav-link">Configuration and Environment</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#logging-and-monitoring" class="nav-link">Logging and Monitoring</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#idempotency" class="nav-link">Idempotency</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="apache-airflow-orchestration">Apache Airflow Orchestration<a class="headerlink" href="#apache-airflow-orchestration" title="Permanent link">&para;</a></h1>
+<p>Apache Airflow is the backbone of this ELT pipeline, responsible for scheduling, executing, monitoring, and managing dependencies between all data processing tasks. This document outlines how Airflow is used in this project.</p>
+<h2 id="core-airflow-concepts-utilized">Core Airflow Concepts Utilized<a class="headerlink" href="#core-airflow-concepts-utilized" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>DAGs (Directed Acyclic Graphs):</strong></p>
+<ul>
+<li>The primary way workflows are defined in Airflow. Each DAG represents a sequence of tasks with defined dependencies.</li>
+<li>Our main DAG (e.g., <code>crypto_data_ingestion_pipeline_vX.py</code> in the <code>dags/</code> folder) orchestrates the entire daily ELT process.</li>
+<li><strong>Definition:</strong> Written in Python.</li>
+<li><strong>Scheduling:</strong> Uses cron expressions or timedelta objects to define how often the DAG should run (e.g., daily at 1 AM UTC).</li>
+</ul>
+</li>
+<li>
+<p><strong>Operators:</strong></p>
+<ul>
+<li>Building blocks of DAGs; they define a single unit of work.</li>
+<li><strong><code>PythonOperator</code>:</strong> Used to execute Python callable functions. This is how our custom ingestion scripts (<code>src/ingestion/*.py</code>) are invoked.</li>
+<li><strong><code>BashOperator</code>:</strong> Used to execute shell commands. This is the primary way <code>dbt</code> commands (<code>dbt run</code>, <code>dbt test</code>, <code>dbt seed</code>, <code>dbt deps</code>) are executed.</li>
+<li><strong><code>PostgresOperator</code> (Potentially):</strong> Could be used to execute specific SQL statements directly against PostgreSQL if needed, though most SQL transformations are handled by dbt.</li>
+</ul>
+</li>
+<li>
+<p><strong>Tasks:</strong></p>
+<ul>
+<li>An instantiated Operator within a DAG becomes a Task.</li>
+<li>Tasks have upstream and downstream dependencies, defining the order of execution.</li>
+</ul>
+</li>
+<li>
+<p><strong>Scheduler:</strong></p>
+<ul>
+<li>The Airflow component that monitors all DAGs and Triggers Task Instances whose dependencies have been met and schedule has been reached.</li>
+</ul>
+</li>
+<li>
+<p><strong>Webserver (UI):</strong></p>
+<ul>
+<li>Provides a user interface for monitoring DAG runs, task statuses, logs, and managing Airflow configurations.</li>
+<li>Accessible at <code>http://localhost:8080</code> in our Dockerized setup.</li>
+</ul>
+</li>
+<li>
+<p><strong>Connections &amp; Variables (Managed by Airflow):</strong></p>
+<ul>
+<li>While our current setup primarily uses environment variables (passed via Docker Compose) for database credentials needed by dbt and Python scripts, Airflow has its own system for managing connections (e.g., to PostgreSQL) and variables. For more complex setups, these could be utilized.</li>
+</ul>
+</li>
+</ol>
+<h2 id="main-elt-dag-structure-crypto_data_ingestion_pipeline_vxpy">Main ELT DAG Structure (<code>crypto_data_ingestion_pipeline_vX.py</code>)<a class="headerlink" href="#main-elt-dag-structure-crypto_data_ingestion_pipeline_vxpy" title="Permanent link">&para;</a></h2>
+<p>The primary DAG typically has the following structure and flow:</p>
+<ol>
+<li>
+<p><strong>DAG Definition:</strong></p>
+<ul>
+<li><code>dag_id</code>, <code>start_date</code>, <code>schedule_interval</code> (e.g., <code>'@daily'</code>), <code>catchup=False</code> (usually for production), default arguments (retries, email on failure, etc.).</li>
+</ul>
+</li>
+<li>
+<p><strong>Task Definitions:</strong></p>
+<ul>
+<li>
+<p><strong>Start Task (Optional <code>DummyOperator</code>):</strong> Marks the beginning of the DAG.</p>
+</li>
+<li>
+<p><strong>Ingestion Tasks (Parallel):</strong></p>
+<ul>
+<li>A <code>PythonOperator</code> task for CoinGecko data ingestion (e.g., <code>task_ingest_coingecko</code>).<ul>
+<li>Calls a Python function like <code>ingest_all_coingecko_data_callable()</code> which in turn calls the core logic in <code>src/ingestion/coingecko_ingestor.py</code>.</li>
+</ul>
+</li>
+<li>A <code>PythonOperator</code> task for Blockchair data ingestion (e.g., <code>task_ingest_blockchair</code>).<ul>
+<li>Calls a Python function like <code>ingest_all_blockchair_data_callable()</code> which then calls functions in <code>src/ingestion/blockchair_ingestor.py</code> for blocks and transactions.</li>
+</ul>
+</li>
+<li>These two main ingestion tasks can often run in parallel as they deal with different data sources.</li>
+</ul>
+</li>
+<li>
+<p><strong>dbt Pre-Transformation Tasks (Sequential):</strong></p>
+<ul>
+<li><code>task_dbt_deps</code> (<code>BashOperator</code>): Executes <code>dbt deps --project-dir ...</code> to install any dbt package dependencies. This should run before any other dbt command if packages are used.</li>
+<li><code>task_dbt_seed</code> (<code>BashOperator</code>): Executes <code>dbt seed --project-dir ...</code> to load static data from CSV files in the <code>seeds/</code> directory.</li>
+</ul>
+</li>
+<li>
+<p><strong>dbt Transformation Task:</strong></p>
+<ul>
+<li><code>task_dbt_run</code> (<code>BashOperator</code>): Executes <code>dbt run --project-dir ...</code> to materialize all dbt models (staging, intermediate, marts). This is the core transformation step.</li>
+</ul>
+</li>
+<li>
+<p><strong>dbt Testing Task:</strong></p>
+<ul>
+<li><code>task_dbt_test</code> (<code>BashOperator</code>): Executes <code>dbt test --project-dir ...</code> to run all defined data quality tests on the transformed models.</li>
+</ul>
+</li>
+<li>
+<p><strong>End Task (Optional <code>DummyOperator</code>):</strong> Marks the successful completion of the DAG.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Task Dependencies (Defining the Flow):</strong>
+    Using <code>&gt;&gt;</code> (set downstream) and <code>&lt;&lt;</code> (set upstream) operators or lists for parallel execution.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Example Dependency Flow</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">start_task</span> <span class="o">=</span> <span class="n">DummyOperator</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">dag</span><span class="o">=</span><span class="n">dag</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">end_task</span> <span class="o">=</span> <span class="n">DummyOperator</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="n">dag</span><span class="o">=</span><span class="n">dag</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># Ingestion tasks can run in parallel</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">ingestion_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">task_ingest_coingecko</span><span class="p">,</span> <span class="n">task_ingest_blockchair</span><span class="p">]</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">start_task</span> <span class="o">&gt;&gt;</span> <span class="n">ingestion_tasks</span> <span class="c1"># Both ingestion tasks depend on start</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># dbt tasks run sequentially after ingestion</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># Ensure all ingestion tasks are complete before starting dbt sequence</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">ingestion_tasks</span><span class="p">:</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">task</span> <span class="o">&gt;&gt;</span> <span class="n">task_dbt_deps</span> 
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="n">task_dbt_deps</span> <span class="o">&gt;&gt;</span> <span class="n">task_dbt_seed</span> <span class="o">&gt;&gt;</span> <span class="n">task_dbt_run</span> <span class="o">&gt;&gt;</span> <span class="n">task_dbt_test</span> <span class="o">&gt;&gt;</span> <span class="n">end_task</span>
+</code></pre></div>
+</li>
+</ol>
+<h2 id="configuration-and-environment">Configuration and Environment<a class="headerlink" href="#configuration-and-environment" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>PYTHONPATH:</strong> The Airflow workers/scheduler need access to the <code>src/</code> directory to import Python ingestion modules. The Docker setup mounts <code>src/</code> and the DAG file often includes logic to add the project root to <code>sys.path</code>.</li>
+<li><strong>DBT_PROJECT_DIR &amp; DBT_PROFILES_DIR:</strong> The <code>BashOperator</code> tasks executing <code>dbt</code> commands need to specify the <code>--project-dir</code> to point to the mounted <code>dbt_project/</code> directory. <code>DBT_PROFILES_DIR</code> (or the default <code>~/.dbt/</code>) must contain a <code>profiles.yml</code> configured to connect to the <code>postgres_app_db</code> service, using environment variables for credentials.</li>
+<li><strong>Environment Variables for dbt:</strong> The <code>BashOperator</code> tasks for dbt pass necessary database connection environment variables (<code>DB_HOST</code>, <code>DB_USER_DBT</code>, <code>DB_PASSWORD_DBT</code>, etc.) which are then used by the <code>profiles.yml</code> <code>env_var()</code> function. These are sourced from the <code>.env</code> file by Docker Compose.</li>
+</ul>
+<h2 id="logging-and-monitoring">Logging and Monitoring<a class="headerlink" href="#logging-and-monitoring" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Task Logs:</strong> All <code>stdout</code> and <code>stderr</code> from Python scripts and dbt commands are captured by Airflow and accessible per task instance in the Airflow UI. This is crucial for debugging.</li>
+<li><strong>DAG Runs View:</strong> Shows the status of all DAG runs (success, running, failed).</li>
+<li><strong>Graph View / Gantt Chart:</strong> Visualize task dependencies and execution times.</li>
+<li><strong>Alerting (Optional):</strong> Airflow can be configured to send email alerts on task failures or SLA misses (though not implemented in the basic setup).</li>
+</ul>
+<h2 id="idempotency">Idempotency<a class="headerlink" href="#idempotency" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>DAGs:</strong> Airflow DAGs themselves are generally idempotent in terms of definition.</li>
+<li><strong>Tasks:</strong></li>
+<li>Ingestion scripts aim for idempotency (e.g., <code>ON CONFLICT DO NOTHING</code> or <code>ON CONFLICT DO UPDATE</code>).</li>
+<li><code>dbt run</code> is generally idempotent for <code>view</code> and <code>table</code> materializations (it recreates or replaces them). For <code>incremental</code> models, dbt handles idempotency based on the incremental strategy and unique keys.</li>
+<li><code>dbt seed</code> can be made idempotent using flags like <code>--full-refresh</code> or by designing seeds to handle existing data.</li>
+</ul>
+<p>By leveraging Airflow, the project achieves a robust, automated, and monitorable ELT pipeline.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

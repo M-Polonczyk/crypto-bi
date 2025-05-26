@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://M-Polonczyk.github.io/crypto-bi/04_dbt_data_modeling/04_04_marts_layer/">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>Marts Layer - Crypto BI</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../..">Crypto BI</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../.." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../01_architecture/" class="nav-link">System Architecture</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../02_data_sources/" class="nav-link">Data Sources</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../03_ingestion_pipeline/" class="nav-link">Ingestion Pipeline</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">dbt Data Modeling</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../.." class="dropdown-item">Home</a>
+</li>
+                                    
+<li>
+    <a href="../04_01_dimensional_model/" class="dropdown-item">Dimensional Model</a>
+</li>
+                                    
+<li>
+    <a href="../04_02_sources/" class="dropdown-item">Sources</a>
+</li>
+                                    
+<li>
+    <a href="../04_03_staging_layer.md" class="dropdown-item">Staging Layer</a>
+</li>
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">Marts Layer</a>
+</li>
+                                    
+<li>
+    <a href="../04_05_testing_and_quality.md" class="dropdown-item">Testing and Quality</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../05_airflow_orchestration/" class="nav-link">Airflow Orchestration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../06_powerbi_integration/" class="nav-link">Power BI Integration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../07_development_guide/" class="nav-link">Development Guide</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../08_troubleshooting/" class="nav-link">Troubleshooting</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../04_02_sources/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../../05_airflow_orchestration/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/M-Polonczyk/crypto-bi/edit/main/docs/04_dbt_data_modeling/04_04_marts_layer.md" class="nav-link">Edit on crypto-bi
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#dbt-marts-layer" class="nav-link">dbt Marts Layer</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#goals-of-the-marts-layer" class="nav-link">Goals of the Marts Layer</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#implementation-in-dbt" class="nav-link">Implementation in dbt</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#materialization" class="nav-link">Materialization</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#example-mart-models" class="nav-link">Example Mart Models</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#relationship-to-bi-tools" class="nav-link">Relationship to BI Tools</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#dbt-testing-and-data-quality" class="nav-link">dbt Testing and Data Quality</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#why-test-your-data" class="nav-link">Why Test Your Data?</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#types-of-tests-in-dbt" class="nav-link">Types of Tests in dbt</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#implementation-strategy" class="nav-link">Implementation Strategy</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#running-tests" class="nav-link">Running Tests</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#in-airflow-dag" class="nav-link">In Airflow DAG</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#task_dbt_run-task_dbt_test" class="nav-link">task_dbt_run &gt;&gt; task_dbt_test</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="dbt-marts-layer">dbt Marts Layer<a class="headerlink" href="#dbt-marts-layer" title="Permanent link">&para;</a></h1>
+<p>The <strong>marts layer</strong> (also known as the presentation or reporting layer) is the final transformation layer in our dbt project. Its purpose is to produce data models that are optimized for end-user consumption, typically by BI tools like Power BI, or for direct analytical querying. These models represent the "single source of truth" for specific business areas or analytical use cases.</p>
+<h2 id="goals-of-the-marts-layer">Goals of the Marts Layer<a class="headerlink" href="#goals-of-the-marts-layer" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Business-Centric View:</strong> Models are designed around business concepts and entities, making them intuitive for analysts and stakeholders.</li>
+<li><strong>Performance Optimization:</strong> Data is structured (often in a dimensional model) to ensure fast query performance for common analytical workloads (slicing, dicing, aggregation).</li>
+<li><strong>Dimensional Modeling:</strong> This layer typically implements dimensional models, most commonly star schemas or snowflake schemas.<ul>
+<li><strong>Fact Tables (<code>fct_</code>):</strong> Contain quantitative measures (metrics) and foreign keys to dimension tables. They represent business processes or events.</li>
+<li><strong>Dimension Tables (<code>dim_</code>):</strong> Provide descriptive context to the facts (who, what, where, when, why).</li>
+</ul>
+</li>
+<li><strong>Aggregation (Optional but Common):</strong> Sometimes, aggregated mart tables are created to pre-compute common summaries, further improving query speed for specific dashboards or reports.</li>
+<li><strong>Single Source of Truth:</strong> Marts provide a consistent and reliable dataset for specific analytical domains.</li>
+</ol>
+<h2 id="implementation-in-dbt">Implementation in dbt<a class="headerlink" href="#implementation-in-dbt" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Mart models are SQL files located in the <code>dbt_project/models/marts/</code> directory. They are often further organized into subdirectories based on business domain (e.g., <code>marts/core/</code>, <code>marts/finance/</code>, <code>marts/blockchain_activity/</code>).</li>
+<li>They primarily <code>SELECT</code> from staging models (<code>{{ ref('stg_model_name') }}</code>) or intermediate models (<code>{{ ref('int_model_name') }}</code>).</li>
+<li>Joins are common here, especially between staging/intermediate models to construct facts and dimensions.</li>
+<li><strong>Naming Convention:</strong></li>
+<li>Dimension tables: <code>dim_&lt;entity_name&gt;.sql</code> (e.g., <code>dim_date.sql</code>, <code>dim_cryptocurrency.sql</code>).</li>
+<li>Fact tables: <code>fct_&lt;business_process_or_event&gt;.sql</code> (e.g., <code>fct_transactions.sql</code>, <code>fct_daily_market_summary.sql</code>).</li>
+</ul>
+<h2 id="materialization">Materialization<a class="headerlink" href="#materialization" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Mart models, especially fact tables and frequently used dimension tables, are almost always materialized as <strong><code>tables</code></strong>.</li>
+<li><strong>Pros:</strong> Provides the best query performance for BI tools as the data is physically stored in the transformed structure.</li>
+<li><strong>Cons:</strong> Requires more storage space and dbt run times can be longer as data is physically written.</li>
+<li>Some very small or rarely changing dimension tables might occasionally be <code>views</code>, but <code>table</code> is the norm for marts.</li>
+<li><strong>Incremental Materialization:</strong> For large fact tables, an incremental materialization strategy (<code>materialized='incremental'</code>) is often used. This allows dbt to only process and insert/update new or changed data since the last run, significantly speeding up dbt runs.</li>
+</ul>
+<p><strong>Example <code>dbt_project.yml</code> configuration for marts:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">models</span><span class="p">:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">crypto_analytics</span><span class="p">:</span><span class="w"> </span><span class="c1"># Your project name</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">marts</span><span class="p">:</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="nt">+materialized</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">table</span><span class="w"> </span><span class="c1"># Default for all models in models/marts/</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span><span class="nt">+schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">analytics</span><span class="w">   </span><span class="c1"># Output schema in PostgreSQL (or &#39;marts&#39;)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">      </span><span class="c1"># Example of configuring a sub-directory for incremental models</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">      </span><span class="c1"># core:</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">      </span><span class="c1">#   fct_transactions: # specific model</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">      </span><span class="c1">#     +materialized: incremental</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">      </span><span class="c1">#     +unique_key: &#39;transaction_pk&#39; # if using unique key for updates</span>
+</code></pre></div>
+<h2 id="example-mart-models">Example Mart Models<a class="headerlink" href="#example-mart-models" title="Permanent link">&para;</a></h2>
+<h3 id="dimension-table-example">Dimension Table Example<a class="headerlink" href="#dimension-table-example" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>dbt_project/models/marts/core/dim_cryptocurrency.sql</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="err">{{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="n">config</span><span class="p">(</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">        </span><span class="n">materialized</span><span class="o">=</span><span class="s1">&#39;table&#39;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="err">}}</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1">-- Assuming you have a seed file for basic metadata</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="k">WITH</span><span class="w"> </span><span class="n">crypto_seed</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">ref</span><span class="p">(</span><span class="s1">&#39;cryptocurrency_metadata_seed&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span><span class="w"> </span><span class="c1">-- Assuming seed name</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">),</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="c1">-- You could potentially join with other sources if more attributes are available</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1">-- For example, if an API provided a &#39;first_transaction_date&#39; per coin from a staging model</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="c1">-- enriched_coin_data AS ( ... )</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="k">SELECT</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">    </span><span class="c1">-- Surrogate Key (if not using symbol directly as PK, which is also an option for small dims)</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span><span class="err">{{</span><span class="w"> </span><span class="n">dbt_utils</span><span class="p">.</span><span class="n">generate_surrogate_key</span><span class="p">([</span><span class="s1">&#39;cs.symbol&#39;</span><span class="p">])</span><span class="w"> </span><span class="err">}}</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">crypto_key</span><span class="p">,</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">    </span><span class="n">cs</span><span class="p">.</span><span class="n">symbol</span><span class="p">,</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">    </span><span class="n">cs</span><span class="p">.</span><span class="n">full_name</span><span class="p">,</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="n">cs</span><span class="p">.</span><span class="n">project_website</span><span class="p">,</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="c1">-- Add other relevant attributes from seeds or enriched sources</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">    </span><span class="k">LOWER</span><span class="p">(</span><span class="n">cs</span><span class="p">.</span><span class="n">full_name</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">blockchair_coin_name</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Example derived attribute for Blockchair API if needed</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">    </span><span class="k">LOWER</span><span class="p">(</span><span class="n">cs</span><span class="p">.</span><span class="n">full_name</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">coingecko_coin_id</span><span class="w"> </span><span class="c1">-- Assuming full name matches CoinGecko ID for simplicity</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">                                            </span><span class="c1">-- In reality, this would be a proper mapping</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="k">FROM</span><span class="w"> </span><span class="n">crypto_seed</span><span class="w"> </span><span class="n">cs</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="c1">-- LEFT JOIN enriched_coin_data ecd ON cs.symbol = ecd.symbol</span>
+</code></pre></div>
+<p><em>(Note: <code>cryptocurrency_metadata_seed</code> would be a CSV file in your <code>seeds/</code> directory loaded via <code>dbt seed</code>)</em></p>
+<h3 id="fact-table-example">Fact Table Example<a class="headerlink" href="#fact-table-example" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>dbt_project/models/marts/core/fct_daily_market_summary.sql</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="err">{{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="n">config</span><span class="p">(</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">        </span><span class="n">materialized</span><span class="o">=</span><span class="s1">&#39;table&#39;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="o">//</span><span class="w"> </span><span class="k">For</span><span class="w"> </span><span class="n">incremental</span><span class="p">:</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">        </span><span class="o">//</span><span class="w"> </span><span class="n">materialized</span><span class="o">=</span><span class="s1">&#39;incremental&#39;</span><span class="p">,</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">        </span><span class="o">//</span><span class="w"> </span><span class="n">unique_key</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;price_date&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;crypto_key&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="k">Or</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">dedicated</span><span class="w"> </span><span class="n">surrogate</span><span class="w"> </span><span class="k">key</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">        </span><span class="o">//</span><span class="w"> </span><span class="n">incremental_strategy</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="s1">&#39;delete+insert&#39;</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="p">)</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="err">}}</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="k">WITH</span><span class="w"> </span><span class="n">stg_prices</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">ref</span><span class="p">(</span><span class="s1">&#39;stg_coingecko__prices_volumes&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="p">),</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="n">dim_date</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">full_date</span><span class="p">,</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">dbt_utils</span><span class="p">.</span><span class="n">generate_surrogate_key</span><span class="p">([</span><span class="s1">&#39;full_date&#39;</span><span class="p">])</span><span class="w"> </span><span class="err">}}</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">date_key</span><span class="w"> </span><span class="c1">-- Or your date SK logic</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">ref</span><span class="p">(</span><span class="s1">&#39;dim_date&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="p">),</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="n">dim_crypto</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">symbol</span><span class="p">,</span><span class="w"> </span><span class="n">crypto_key</span><span class="p">,</span><span class="w"> </span><span class="n">coingecko_coin_id</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">ref</span><span class="p">(</span><span class="s1">&#39;dim_cryptocurrency&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="p">)</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="k">SELECT</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">    </span><span class="c1">-- Surrogate key for the fact table</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">    </span><span class="err">{{</span><span class="w"> </span><span class="n">dbt_utils</span><span class="p">.</span><span class="n">generate_surrogate_key</span><span class="p">([</span><span class="s1">&#39;sp.price_date&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;dc.crypto_key&#39;</span><span class="p">])</span><span class="w"> </span><span class="err">}}</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">daily_market_summary_pk</span><span class="p">,</span>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">    </span><span class="c1">-- Foreign Keys</span>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">    </span><span class="n">dd</span><span class="p">.</span><span class="n">date_key</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">price_date_key</span><span class="p">,</span>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">    </span><span class="n">dc</span><span class="p">.</span><span class="n">crypto_key</span><span class="p">,</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">    </span><span class="c1">-- Degenerate Dimensions (natural keys for context)</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">    </span><span class="n">sp</span><span class="p">.</span><span class="n">price_date</span><span class="p">,</span>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="w">    </span><span class="n">dc</span><span class="p">.</span><span class="n">symbol</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">crypto_symbol</span><span class="p">,</span>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="w">    </span><span class="c1">-- Measures</span>
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="w">    </span><span class="n">sp</span><span class="p">.</span><span class="n">price_usd</span><span class="p">,</span>
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a><span class="w">    </span><span class="n">sp</span><span class="p">.</span><span class="n">volume_usd</span><span class="p">,</span>
+<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a><span class="w">    </span><span class="n">sp</span><span class="p">.</span><span class="n">market_cap_usd</span>
+<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a>
+<a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a><span class="k">FROM</span><span class="w"> </span><span class="n">stg_prices</span><span class="w"> </span><span class="n">sp</span>
+<a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a><span class="k">JOIN</span><span class="w"> </span><span class="n">dim_date</span><span class="w"> </span><span class="n">dd</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">sp</span><span class="p">.</span><span class="n">price_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dd</span><span class="p">.</span><span class="n">full_date</span>
+<a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a><span class="k">JOIN</span><span class="w"> </span><span class="n">dim_crypto</span><span class="w"> </span><span class="n">dc</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">LOWER</span><span class="p">(</span><span class="n">sp</span><span class="p">.</span><span class="n">coin_id</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">LOWER</span><span class="p">(</span><span class="n">dc</span><span class="p">.</span><span class="n">coingecko_coin_id</span><span class="p">)</span><span class="w"> </span><span class="c1">-- Robust join on CG ID</span>
+<a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a>
+<a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a><span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_incremental</span><span class="p">()</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a><span class="c1">-- this filter will only be applied on an incremental run</span>
+<a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">sp</span><span class="p">.</span><span class="n">price_date</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">MAX</span><span class="p">(</span><span class="n">price_date</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="err">}}</span><span class="p">)</span>
+<a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a><span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">endif</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+</code></pre></div>
+<h2 id="relationship-to-bi-tools">Relationship to BI Tools<a class="headerlink" href="#relationship-to-bi-tools" title="Permanent link">&para;</a></h2>
+<p>The tables created in the marts layer are the ones that Power BI (or any other BI tool) will connect to. The clear structure of facts and dimensions, well-defined relationships (enforced by dbt tests), and optimized performance make data analysis much more efficient and reliable.</p>
+<p>```</p>
+<hr />
+<p><strong><code>docs/04_dbt_data_modeling/04_05_testing_and_quality.md</code></strong></p>
+<p>```markdown</p>
+<h1 id="dbt-testing-and-data-quality">dbt Testing and Data Quality<a class="headerlink" href="#dbt-testing-and-data-quality" title="Permanent link">&para;</a></h1>
+<p>Ensuring data quality is paramount for any analytics project. dbt provides a powerful and convenient framework for defining, executing, and managing data tests directly within your data transformation workflow. This helps build trust in the data and allows for early detection of issues.</p>
+<h2 id="why-test-your-data">Why Test Your Data?<a class="headerlink" href="#why-test-your-data" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Accuracy:</strong> Verify that calculations are correct and data reflects reality.</li>
+<li><strong>Completeness:</strong> Ensure no critical data is missing.</li>
+<li><strong>Consistency:</strong> Check that data is consistent across different tables and models.</li>
+<li><strong>Integrity:</strong> Maintain referential integrity between related entities (e.g., foreign keys).</li>
+<li><strong>Reliability:</strong> Build confidence that the data powering dashboards and decisions is trustworthy.</li>
+<li><strong>Early Detection:</strong> Catch data issues early in the pipeline, before they impact downstream users or reports.</li>
+</ul>
+<h2 id="types-of-tests-in-dbt">Types of Tests in dbt<a class="headerlink" href="#types-of-tests-in-dbt" title="Permanent link">&para;</a></h2>
+<p>dbt supports several types of tests:</p>
+<ol>
+<li>
+<p><strong>Schema Tests (Generic Tests):</strong></p>
+<ul>
+<li>These are predefined, out-of-the-box tests that can be applied to specific columns in your models.</li>
+<li>They are defined in <code>.yml</code> files, typically alongside your model definitions or in a dedicated <code>schema.yml</code> file within a model subdirectory.</li>
+<li><strong>Common Schema Tests:</strong><ul>
+<li><code>unique</code>: Asserts that all values in a column are unique.</li>
+<li><code>not_null</code>: Asserts that there are no null values in a column.</li>
+<li><code>accepted_values</code>: Asserts that all values in a column are within a specified list of allowed values.<ul>
+<li>Example: <code>tests: - accepted_values: values: ['BTC', 'ETH', 'DOGE']</code></li>
+</ul>
+</li>
+<li><code>relationships</code>: Asserts referential integrity. It checks that every value in a column (foreign key) exists in a corresponding column of another model (primary key).<ul>
+<li>Example: <code>tests: - relationships: to: ref('dim_date') field: date_key</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Many more generic tests are available through packages like <code>dbt-utils</code> (e.g., <code>equal_rowcount</code>, <code>expression_is_true</code>).</li>
+</ul>
+</li>
+<li>
+<p><strong>Singular Data Tests (Custom Tests):</strong></p>
+<ul>
+<li>These are custom SQL queries that you write to validate specific business logic or data conditions.</li>
+<li>They are stored as <code>.sql</code> files in the <code>tests/</code> directory of your dbt project (often in <code>tests/singular/</code> or <code>tests/asserts/</code>).</li>
+<li><strong>A singular data test PASSES if the SQL query returns ZERO rows.</strong> If it returns one or more rows, the test FAILS, and those rows represent the records that violate the assertion.</li>
+<li><strong>Example:</strong> A test to ensure that a transaction amount is always positive.
+    <code>sql
+    -- tests/singular/assert_transaction_value_positive.sql
+    SELECT
+        transaction_pk, -- Or any relevant identifier
+        transaction_amount_usd
+    FROM {{ ref('fct_transactions') }}
+    WHERE transaction_amount_usd &lt; 0</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Source Freshness (Specialized Test):</strong></p>
+<ul>
+<li>Defined in <code>sources.yml</code> to monitor the timeliness of your raw data loads.</li>
+<li>Requires a <code>loaded_at_field</code> in your source table that indicates when the data was last updated.</li>
+<li>You can configure <code>warn_after</code> and <code>error_after</code> thresholds.</li>
+</ul>
+</li>
+</ol>
+<h2 id="implementation-strategy">Implementation Strategy<a class="headerlink" href="#implementation-strategy" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Test at Every Layer:</strong></p>
+<ul>
+<li><strong>Sources:</strong> Basic <code>not_null</code> on key identifiers, <code>unique</code> where expected, and <code>freshness</code> checks.</li>
+<li><strong>Staging Models:</strong> <code>unique</code> and <code>not_null</code> on primary keys/business keys, <code>accepted_values</code> for categorical columns.</li>
+<li><strong>Mart Models (Dimensions):</strong> <code>unique</code> and <code>not_null</code> on surrogate keys and natural keys.</li>
+<li><strong>Mart Models (Facts):</strong> <code>not_null</code> on foreign keys and key measures. <code>relationships</code> tests to ensure all foreign keys correctly point to existing dimension records. Custom business logic tests (e.g., sum of debits equals sum of credits).</li>
+</ul>
+</li>
+<li>
+<p><strong>Define Tests in <code>.yml</code> Files:</strong>
+    For schema tests, co-locate them with your model definitions in <code>.yml</code> files. This keeps the model's contract (columns, descriptions, tests) in one place.</p>
+<p><strong>Example:</strong> <code>models/marts/core/fct_transactions.yml</code>
+```yaml
+version: 2</p>
+<p>models:
+  - name: fct_transactions
+    description: "Fact table containing individual blockchain transactions with their associated measures and dimensional foreign keys."
+    columns:
+      - name: transaction_pk # Assuming a surrogate key for the fact table
+        description: "Surrogate primary key for the transaction fact."
+        tests:
+          - unique
+          - not_null
+      - name: tx_hash
+        description: "The original transaction hash."
+        tests:
+          - not_null
+      - name: price_date_key
+        description: "Foreign key to dim_date, representing the date of the transaction."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_key # Assuming 'date_key' is the PK in dim_date
+      - name: crypto_key
+        description: "Foreign key to dim_cryptocurrency."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_cryptocurrency')
+              field: crypto_key
+      - name: fee_usd
+        description: "Transaction fee in USD."
+        tests:
+          - dbt_utils.expression_is_true: # Using a test from dbt_utils package
+              expression: "&gt;= 0" # Fee should not be negative
+              # This could also be a singular test for more complex logic
+      # ... other columns and their tests
+```</p>
+</li>
+<li>
+<p><strong>Leverage dbt Packages:</strong></p>
+<ul>
+<li>Install and use packages like <code>dbt-utils</code> which provide a rich set of additional generic tests (e.g., <code>dbt_utils.not_accepted_values</code>, <code>dbt_utils.equal_rowcount</code>, <code>dbt_utils.expression_is_true</code>).</li>
+<li>Add to <code>packages.yml</code>:
+    ```yaml
+    packages:<ul>
+<li>package: dbt-labs/dbt_utils
+    version: ["&gt;=1.1.0", "&lt;1.2.0"] # Specify version range
+```</li>
+</ul>
+</li>
+<li>Run <code>dbt deps</code> to install.</li>
+</ul>
+</li>
+<li>
+<p><strong>Write Custom SQL Tests for Business Logic:</strong>
+    If a validation cannot be expressed with a generic schema test, write a singular data test in the <code>tests/</code> directory.</p>
+</li>
+</ol>
+<h2 id="running-tests">Running Tests<a class="headerlink" href="#running-tests" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Command:</strong> <code>dbt test</code><ul>
+<li><code>dbt test</code>: Runs all tests (schema and singular).</li>
+<li><code>dbt test --select model_name</code>: Runs tests defined on a specific model.</li>
+<li><code>dbt test --select source:source_name</code>: Runs tests on a specific source.</li>
+<li><code>dbt test --select tag:my_tag</code>: Runs tests associated with a specific tag.</li>
+</ul>
+</li>
+<li><strong>Output:</strong> dbt will report the status (PASS, FAIL, WARN, ERROR) of each test. For failing singular tests, it often shows the rows that failed the assertion.</li>
+<li>
+<p><strong>Integration with Airflow:</strong> Include a <code>BashOperator</code> task in your Airflow DAGs to execute <code>dbt test</code> after <code>dbt run</code>. The DAG can be configured to fail if any dbt tests fail, preventing bad data from being used downstream.</p>
+<p>```python</p>
+<h1 id="in-airflow-dag">In Airflow DAG<a class="headerlink" href="#in-airflow-dag" title="Permanent link">&para;</a></h1>
+<p>task_dbt_test = BashOperator(
+    task_id='dbt_run_tests',
+    bash_command=f"dbt test --project-dir {DBT_PROJECT_DIR} --profiles-dir {DBT_PROFILES_DIR}",
+    # ...
+)</p>
+<h1 id="task_dbt_run-task_dbt_test">task_dbt_run &gt;&gt; task_dbt_test<a class="headerlink" href="#task_dbt_run-task_dbt_test" title="Permanent link">&para;</a></h1>
+<p>```</p>
+</li>
+</ul>
+<p>By consistently applying tests throughout your dbt project, you significantly improve the reliability and trustworthiness of your data warehouse, providing a solid foundation for your BI and analytics efforts.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

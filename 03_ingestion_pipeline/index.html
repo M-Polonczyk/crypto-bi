@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://M-Polonczyk.github.io/crypto-bi/03_ingestion_pipeline/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Ingestion Pipeline - Crypto BI</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Crypto BI</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../01_architecture/" class="nav-link">System Architecture</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../02_data_sources/" class="nav-link">Data Sources</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">Ingestion Pipeline</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">dbt Data Modeling</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href=".." class="dropdown-item">Home</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_01_dimensional_model/" class="dropdown-item">Dimensional Model</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_02_sources/" class="dropdown-item">Sources</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_03_staging_layer.md" class="dropdown-item">Staging Layer</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_04_marts_layer/" class="dropdown-item">Marts Layer</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_05_testing_and_quality.md" class="dropdown-item">Testing and Quality</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../05_airflow_orchestration/" class="nav-link">Airflow Orchestration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../06_powerbi_integration/" class="nav-link">Power BI Integration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../07_development_guide/" class="nav-link">Development Guide</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../08_troubleshooting/" class="nav-link">Troubleshooting</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../02_data_sources/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href=".." class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/M-Polonczyk/crypto-bi/edit/main/docs/03_ingestion_pipeline.md" class="nav-link">Edit on crypto-bi
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#data-ingestion-pipeline" class="nav-link">Data Ingestion Pipeline</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#core-components" class="nav-link">Core Components</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#workflow-for-a-single-daily-run" class="nav-link">Workflow for a Single Daily Run</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#database-interaction" class="nav-link">Database Interaction</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#configuration" class="nav-link">Configuration</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#error-handling-and-retries" class="nav-link">Error Handling and Retries</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="data-ingestion-pipeline">Data Ingestion Pipeline<a class="headerlink" href="#data-ingestion-pipeline" title="Permanent link">&para;</a></h1>
+<p>The data ingestion pipeline is responsible for extracting data from external APIs (Blockchair and CoinGecko) and loading it into raw/staging tables in the PostgreSQL application database. This process is orchestrated by Apache Airflow.</p>
+<h2 id="core-components">Core Components<a class="headerlink" href="#core-components" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Python Ingestion Scripts (<code>src/ingestion/</code>):</strong></p>
+<ul>
+<li><strong><code>blockchair_ingestor.py</code>:</strong> Handles all interactions with the Blockchair API.<ul>
+<li>Fetches block data for specified cryptocurrencies (BTC, ETH, DOGE) for a given date.</li>
+<li>Fetches transaction data for these cryptocurrencies for a given date.</li>
+<li>Includes functions to create necessary raw tables in PostgreSQL if they don't exist (<code>CREATE TABLE IF NOT EXISTS</code>).</li>
+<li>Uses <code>psycopg2</code> to connect to PostgreSQL and insert data, handling potential conflicts (e.g., <code>ON CONFLICT DO NOTHING</code> for idempotent writes).</li>
+</ul>
+</li>
+<li><strong><code>coingecko_ingestor.py</code>:</strong> Handles all interactions with the CoinGecko API.<ul>
+<li>Fetches historical market data (price, volume, market cap) for specified cryptocurrencies for a given date.</li>
+<li>Creates the raw market data table in PostgreSQL if it doesn't exist.</li>
+<li>Inserts or updates market data, using <code>ON CONFLICT DO UPDATE</code> to ensure the latest data for a given coin and date is stored.</li>
+</ul>
+</li>
+<li><strong><code>db_utils.py</code>:</strong> Contains utility functions for establishing PostgreSQL database connections and executing queries (single, batch). Reads database credentials from environment variables.</li>
+<li><strong>Shared Utilities (<code>src/common/utils.py</code>):</strong> Provides common helper functions, such as date manipulation (e.g., getting yesterday's date in various formats).</li>
+</ul>
+</li>
+<li>
+<p><strong>Apache Airflow DAGs (<code>dags/</code>):</strong></p>
+<ul>
+<li>A primary DAG (e.g., <code>crypto_data_ingestion_vX.py</code>) orchestrates the entire ingestion process.</li>
+<li><strong>Scheduling:</strong> The DAG is typically scheduled to run daily (e.g., <code>@daily</code> or a cron expression like <code>0 1 * * *</code> to run at 1 AM UTC).</li>
+<li><strong>Tasks:</strong><ul>
+<li><code>PythonOperator</code> tasks are used to call the main functions within the ingestion scripts (e.g., <code>ingest_recent_blocks</code>, <code>ingest_transactions_for_blocks</code>, <code>ingest_coingecko_data_for_date</code>).</li>
+<li>Tasks can be defined to run in parallel for different data sources or sequentially if there are dependencies.</li>
+<li>Error handling, retries, and logging are managed by Airflow.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="workflow-for-a-single-daily-run">Workflow for a Single Daily Run<a class="headerlink" href="#workflow-for-a-single-daily-run" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Trigger:</strong> Airflow's scheduler triggers the main ingestion DAG at the scheduled time.</li>
+<li><strong>Parameterization (Date):</strong> The DAG typically processes data for the "previous day" relative to its execution date. Utility functions help determine this target date.</li>
+<li><strong>CoinGecko Ingestion Task:</strong><ul>
+<li>The <code>ingest_coingecko_data_for_date</code> function is called.</li>
+<li>It iterates through the target cryptocurrencies (BTC, ETH, DOGE).</li>
+<li>For each coin, it calls the CoinGecko API to fetch market data for the target date.</li>
+<li>A small delay is introduced between API calls to respect rate limits.</li>
+<li>Fetched data is then inserted/updated into the <code>raw_market_prices_volumes</code> table in PostgreSQL.</li>
+</ul>
+</li>
+<li><strong>Blockchair Ingestion Tasks (can run in parallel with CoinGecko or sequentially):</strong><ul>
+<li>The <code>ingest_all_blockchair_data_callable</code> (or similar wrapper function in the DAG) is called.</li>
+<li>This function iterates through BTC, ETH, and DOGE.</li>
+<li>For each coin:<ul>
+<li><code>ingest_recent_blocks</code> fetches block data for the target date and inserts it into <code>raw_blockchain_blocks</code>.</li>
+<li><code>ingest_transactions_for_blocks</code> fetches transaction data for the target date (or based on fetched block IDs if implemented that way) and inserts it into <code>raw_blockchain_transactions</code>.</li>
+</ul>
+</li>
+<li>Rate limiting delays are also applied here.</li>
+</ul>
+</li>
+<li><strong>Logging and Monitoring:</strong><ul>
+<li>All ingestion steps log their progress, successes, and failures. Airflow captures these logs, making them accessible via the Airflow UI.</li>
+<li>Airflow monitors task status (running, success, failed) and handles retries as configured.</li>
+</ul>
+</li>
+<li><strong>Completion:</strong> Once all ingestion tasks complete successfully, the raw data for the target day is available in PostgreSQL, ready for dbt transformation.</li>
+</ol>
+<h2 id="database-interaction">Database Interaction<a class="headerlink" href="#database-interaction" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Schema for Raw Data:</strong> Ingested data is loaded into tables within the <code>public</code> schema (or a dedicated <code>raw_data</code> schema if preferred) in the <code>postgres_app_db</code>.</li>
+<li><strong>Table Creation:</strong> Scripts use <code>CREATE TABLE IF NOT EXISTS</code> to ensure tables are present.</li>
+<li><strong>Idempotency:</strong></li>
+<li>For blockchain data (blocks, transactions), <code>ON CONFLICT (primary_key_or_unique_constraint) DO NOTHING</code> is used. This ensures that if a record already exists (e.g., due to a re-run), it's not duplicated.</li>
+<li>For market data, <code>ON CONFLICT (coin_id, price_date) DO UPDATE SET ...</code> is used. This allows for corrections or updates to historical market data if the source provides them.</li>
+</ul>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>API Keys:</strong> Optional API keys (e.g., for CoinGecko Pro) are managed via environment variables (e.g., <code>COINGECKO_API_KEY</code>).</li>
+<li><strong>Database Credentials:</strong> Connection details for PostgreSQL (<code>DB_HOST</code>, <code>DB_PORT</code>, <code>DB_NAME</code>, <code>DB_USER_APP</code>, <code>DB_PASSWORD_APP</code>) are sourced from environment variables, which are loaded by Docker Compose into the Airflow worker/scheduler environment.</li>
+<li><strong>Target Cryptocurrencies:</strong> The list of coins to process (BTC, ETH, DOGE) is typically hardcoded or configurable within the DAG or ingestion scripts.</li>
+</ul>
+<h2 id="error-handling-and-retries">Error Handling and Retries<a class="headerlink" href="#error-handling-and-retries" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>API Request Errors:</strong> <code>requests</code> library's exception handling (<code>response.raise_for_status()</code>, <code>try-except</code> blocks) is used to catch HTTP errors or network issues.</li>
+<li><strong>Database Errors:</strong> <code>psycopg2</code> exceptions are caught during database operations.</li>
+<li><strong>Airflow Retries:</strong> DAG tasks are configured with a retry policy (e.g., retry once after a 5-minute delay) to handle transient failures.</li>
+<li><strong>Logging:</strong> Comprehensive logging helps in diagnosing issues after a failure.</li>
+</ul>
+<p>```</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

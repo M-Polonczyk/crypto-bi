@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://M-Polonczyk.github.io/crypto-bi/04_dbt_data_modeling/04_01_dimensional_model/">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>Dimensional Model - Crypto BI</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../..">Crypto BI</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../.." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../01_architecture/" class="nav-link">System Architecture</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../02_data_sources/" class="nav-link">Data Sources</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../03_ingestion_pipeline/" class="nav-link">Ingestion Pipeline</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">dbt Data Modeling</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../.." class="dropdown-item">Home</a>
+</li>
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">Dimensional Model</a>
+</li>
+                                    
+<li>
+    <a href="../04_02_sources/" class="dropdown-item">Sources</a>
+</li>
+                                    
+<li>
+    <a href="../04_03_staging_layer.md" class="dropdown-item">Staging Layer</a>
+</li>
+                                    
+<li>
+    <a href="../04_04_marts_layer/" class="dropdown-item">Marts Layer</a>
+</li>
+                                    
+<li>
+    <a href="../04_05_testing_and_quality.md" class="dropdown-item">Testing and Quality</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../05_airflow_orchestration/" class="nav-link">Airflow Orchestration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../06_powerbi_integration/" class="nav-link">Power BI Integration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../07_development_guide/" class="nav-link">Development Guide</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../08_troubleshooting/" class="nav-link">Troubleshooting</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../.." class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../04_02_sources/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/M-Polonczyk/crypto-bi/edit/main/docs/04_dbt_data_modeling/04_01_dimensional_model.md" class="nav-link">Edit on crypto-bi
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#dimensional-model-overview" class="nav-link">Dimensional Model Overview</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#key-concepts" class="nav-link">Key Concepts</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#proposed-core-dimensions" class="nav-link">Proposed Core Dimensions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#proposed-core-fact-tables" class="nav-link">Proposed Core Fact Tables</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#benefits-of-this-model" class="nav-link">Benefits of this Model</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#implementation-in-dbt" class="nav-link">Implementation in dbt</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="dimensional-model-overview">Dimensional Model Overview<a class="headerlink" href="#dimensional-model-overview" title="Permanent link">&para;</a></h1>
+<p>The core analytical data model implemented in the <code>marts</code> layer of our dbt project is a <strong>dimensional model</strong>. This approach, popularized by Ralph Kimball, structures data for optimal query performance, understandability, and ease of use with BI tools like Power BI.</p>
+<h2 id="key-concepts">Key Concepts<a class="headerlink" href="#key-concepts" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Facts:</strong></p>
+<ul>
+<li>Represent business measurements or metrics. These are typically numeric and additive.</li>
+<li>Stored in <strong>Fact Tables</strong>.</li>
+<li>Examples: Transaction value, number of transactions, daily trading volume, number of blocks mined.</li>
+</ul>
+</li>
+<li>
+<p><strong>Dimensions:</strong></p>
+<ul>
+<li>Provide the context for the facts. They describe the "who, what, where, when, why, and how" related to a business process event.</li>
+<li>Stored in <strong>Dimension Tables</strong>.</li>
+<li>Examples: Date, Cryptocurrency, Block details, Address (if modeled).</li>
+<li>Dimension tables contain descriptive attributes (e.g., month name, cryptocurrency full name, block hash).</li>
+</ul>
+</li>
+<li>
+<p><strong>Star Schema (Primary Goal):</strong></p>
+<ul>
+<li>The most common dimensional model structure.</li>
+<li>Characterized by one or more fact tables referencing any number of dimension tables.</li>
+<li>Visually resembles a star, with the fact table at the center and dimension tables radiating outwards.</li>
+<li>Generally denormalized for simpler joins and faster queries.</li>
+</ul>
+</li>
+<li>
+<p><strong>Snowflake Schema (Potential Evolution):</strong></p>
+<ul>
+<li>An extension of a star schema where dimension tables are normalized into multiple related tables.</li>
+<li>Can reduce data redundancy in large dimensions but may lead to more complex queries with more joins.</li>
+<li>We aim for a star schema initially but may snowflake dimensions if they become very large and have highly redundant attributes.</li>
+</ul>
+</li>
+</ol>
+<h2 id="proposed-core-dimensions">Proposed Core Dimensions<a class="headerlink" href="#proposed-core-dimensions" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong><code>dim_date</code>:</strong></p>
+<ul>
+<li><strong>Grain:</strong> One row per day.</li>
+<li><strong>Attributes:</strong> <code>date_key</code> (surrogate key), <code>full_date</code>, <code>year</code>, <code>month</code>, <code>month_name</code>, <code>day_of_month</code>, <code>day_of_week_name</code>, <code>quarter</code>, <code>is_weekend</code>, etc.</li>
+<li><strong>Purpose:</strong> Allows slicing and dicing facts by various time attributes. Essential for time-series analysis.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>dim_cryptocurrency</code>:</strong></p>
+<ul>
+<li><strong>Grain:</strong> One row per cryptocurrency being analyzed (BTC, ETH, DOGE).</li>
+<li><strong>Attributes:</strong> <code>crypto_key</code> (surrogate key), <code>symbol</code> (e.g., BTC), <code>full_name</code> (e.g., Bitcoin), <code>coin_gecko_id</code>, <code>blockchair_coin_name</code>, relevant project details.</li>
+<li><strong>Source:</strong> Primarily from <code>seeds/cryptocurrency_metadata.csv</code> and potentially enriched from API responses.</li>
+<li><strong>Purpose:</strong> Allows filtering and grouping facts by cryptocurrency.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>dim_block</code> (Blockchain Specific):</strong></p>
+<ul>
+<li><strong>Grain:</strong> One row per unique block across all analyzed blockchains.</li>
+<li><strong>Attributes:</strong> <code>block_pk</code> (surrogate key), <code>block_id</code> (native ID), <code>block_hash</code>, <code>coin_symbol</code> (FK to <code>dim_cryptocurrency</code>), <code>block_timestamp_utc</code>, <code>block_date_key</code> (FK to <code>dim_date</code>), <code>transaction_count_in_block</code>, <code>block_size_bytes</code>, <code>difficulty</code>.</li>
+<li><strong>Purpose:</strong> Provides context for blockchain-related facts, such as transactions.</li>
+</ul>
+</li>
+</ol>
+<h2 id="proposed-core-fact-tables">Proposed Core Fact Tables<a class="headerlink" href="#proposed-core-fact-tables" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong><code>fct_transactions</code>:</strong></p>
+<ul>
+<li><strong>Grain:</strong> One row per blockchain transaction.</li>
+<li><strong>Foreign Keys:</strong> <code>transaction_date_key</code> (to <code>dim_date</code>), <code>crypto_key</code> (to <code>dim_cryptocurrency</code>), <code>block_pk</code> (to <code>dim_block</code>).</li>
+<li><strong>Degenerate Dimensions:</strong> <code>tx_hash</code> (transaction hash itself, acting as a descriptive attribute).</li>
+<li><strong>Measures (Facts):</strong> <code>fee_usd</code>, <code>output_total_usd</code>, <code>input_count</code>, <code>output_count</code>, <code>tx_size_bytes</code>, <code>is_coinbase_flag</code> (0 or 1).</li>
+<li><strong>Purpose:</strong> Central table for analyzing transaction activity, fees, and values.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>fct_daily_market_summary</code>:</strong></p>
+<ul>
+<li><strong>Grain:</strong> One row per cryptocurrency per day.</li>
+<li><strong>Foreign Keys:</strong> <code>price_date_key</code> (to <code>dim_date</code>), <code>crypto_key</code> (to <code>dim_cryptocurrency</code>).</li>
+<li><strong>Measures (Facts):</strong> <code>price_usd</code>, <code>volume_usd</code>, <code>market_cap_usd</code>.</li>
+<li><strong>Purpose:</strong> Tracks daily market performance indicators for each cryptocurrency.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>fct_daily_block_summary</code> (Potential):</strong></p>
+<ul>
+<li><strong>Grain:</strong> One row per cryptocurrency per day.</li>
+<li><strong>Foreign Keys:</strong> <code>summary_date_key</code> (to <code>dim_date</code>), <code>crypto_key</code> (to <code>dim_cryptocurrency</code>).</li>
+<li><strong>Measures (Facts):</strong> <code>total_blocks_mined_on_day</code>, <code>total_transactions_in_blocks_on_day</code>, <code>average_difficulty_on_day</code>, <code>total_fees_collected_on_day_usd</code>.</li>
+<li><strong>Purpose:</strong> Provides aggregated daily on-chain activity metrics. This might be derived by aggregating <code>dim_block</code> or <code>fct_transactions</code>.</li>
+</ul>
+</li>
+</ol>
+<h2 id="benefits-of-this-model">Benefits of this Model<a class="headerlink" href="#benefits-of-this-model" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Understandability:</strong> Easier for business users and analysts to comprehend the data relationships.</li>
+<li><strong>Query Performance:</strong> Optimized for common analytical queries (filtering, grouping, aggregation). Joins are typically between a fact table and a few dimension tables.</li>
+<li><strong>Ease of Use with BI Tools:</strong> Power BI and similar tools are designed to work effectively with star/snowflake schemas.</li>
+<li><strong>Extensibility:</strong> Relatively straightforward to add new facts or dimensions as business requirements evolve.</li>
+</ul>
+<h2 id="implementation-in-dbt">Implementation in dbt<a class="headerlink" href="#implementation-in-dbt" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Dimension tables are created as dbt models in <code>dbt_project/models/marts/core/dim_*.sql</code>.</li>
+<li>Fact tables are created as dbt models in <code>dbt_project/models/marts/core/fct_*.sql</code>.</li>
+<li>Surrogate keys for dimensions can be generated using <code>dbt_utils.generate_surrogate_key</code> or by using database sequences if preferred for <code>dim_</code> tables. Fact table primary keys can also be surrogate keys based on the combination of their degenerate dimensions and FKs.</li>
+<li>Relationships between fact and dimension tables are enforced and tested using dbt's <code>relationships</code> test.</li>
+</ul>
+<p>```</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

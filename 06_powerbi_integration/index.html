@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://M-Polonczyk.github.io/crypto-bi/06_powerbi_integration/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Power BI Integration - Crypto BI</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Crypto BI</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../01_architecture/" class="nav-link">System Architecture</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../02_data_sources/" class="nav-link">Data Sources</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../03_ingestion_pipeline/" class="nav-link">Ingestion Pipeline</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">dbt Data Modeling</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href=".." class="dropdown-item">Home</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_01_dimensional_model/" class="dropdown-item">Dimensional Model</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_02_sources/" class="dropdown-item">Sources</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_03_staging_layer.md" class="dropdown-item">Staging Layer</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_04_marts_layer/" class="dropdown-item">Marts Layer</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_05_testing_and_quality.md" class="dropdown-item">Testing and Quality</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../05_airflow_orchestration/" class="nav-link">Airflow Orchestration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">Power BI Integration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../07_development_guide/" class="nav-link">Development Guide</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../08_troubleshooting/" class="nav-link">Troubleshooting</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../05_airflow_orchestration/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../07_development_guide/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/M-Polonczyk/crypto-bi/edit/main/docs/06_powerbi_integration.md" class="nav-link">Edit on crypto-bi
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#power-bi-integration-guide" class="nav-link">Power BI Integration Guide</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#connecting-power-bi-to-postgresql" class="nav-link">Connecting Power BI to PostgreSQL</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#best-practices-in-power-bi" class="nav-link">Best Practices in Power BI</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#example-analysis-scenarios" class="nav-link">Example Analysis Scenarios</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="power-bi-integration-guide">Power BI Integration Guide<a class="headerlink" href="#power-bi-integration-guide" title="Permanent link">&para;</a></h1>
+<p>This document provides guidance on connecting Microsoft Power BI Desktop to the PostgreSQL data warehouse populated by this ELT pipeline, and some best practices for building effective reports and dashboards.</p>
+<h2 id="connecting-power-bi-to-postgresql">Connecting Power BI to PostgreSQL<a class="headerlink" href="#connecting-power-bi-to-postgresql" title="Permanent link">&para;</a></h2>
+<p>The transformed data resides in the <code>postgres_app_db</code> service, specifically within the analytical schemas created by dbt (e.g., <code>analytics</code> or <code>marts</code>).</p>
+<p><strong>Steps to Connect:</strong></p>
+<ol>
+<li>
+<p><strong>Ensure Services are Running:</strong></p>
+<ul>
+<li>Verify that your Docker Compose services are up and running, especially the <code>postgres_app_db</code> container.</li>
+<li>You can check with <code>docker ps</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Open Power BI Desktop.</strong></p>
+</li>
+<li>
+<p><strong>Get Data:</strong></p>
+<ul>
+<li>On the "Home" ribbon, click "Get Data".</li>
+<li>Select "Database" from the categories on the left.</li>
+<li>Choose "PostgreSQL database" from the list and click "Connect".</li>
+</ul>
+</li>
+<li>
+<p><strong>PostgreSQL Database Connection Details:</strong></p>
+<ul>
+<li><strong>Server:</strong> <code>localhost</code><ul>
+<li><em>Explanation:</em> The <code>docker-compose.yaml</code> maps port <code>5432</code> of the <code>postgres_app_db</code> container to port <code>5432</code> on your host machine (<code>localhost</code>).</li>
+</ul>
+</li>
+<li><strong>Database:</strong> Enter the name of your application database. This is defined by the <code>DB_NAME_APP</code> variable in your <code>.env</code> file (e.g., <code>crypto_raw_db</code>).</li>
+<li><strong>Data Connectivity mode:</strong><ul>
+<li><strong>Import (Recommended for most scenarios):</strong> Power BI imports a copy of the data into its internal VertiPaq engine. This generally provides the best performance for report interaction and allows for complex DAX calculations. Suitable for datasets that fit in memory.</li>
+<li><strong>DirectQuery:</strong> Power BI sends queries directly to the PostgreSQL database each time a visual is interacted with. Use this if your dataset is extremely large and cannot fit in memory, or if you need near real-time data (though our pipeline is batch-oriented). DirectQuery can be slower and has limitations on DAX functions.</li>
+</ul>
+</li>
+<li><em>(Advanced options like SQL statement or command timeout are usually not needed for initial connection.)</em></li>
+</ul>
+</li>
+<li>
+<p><strong>Credentials:</strong></p>
+<ul>
+<li>When prompted for credentials, select the "Database" tab on the left.</li>
+<li><strong>User name:</strong> Enter the database user defined by <code>DB_USER_APP</code> in your <code>.env</code> file.</li>
+<li><strong>Password:</strong> Enter the password defined by <code>DB_PASSWORD_APP</code> in your <code>.env</code> file.</li>
+<li><strong>Encryption:</strong> You can choose the level of encryption if your PostgreSQL server is configured for SSL (our basic Docker setup is not, but a production setup would be). For local development, "None" might be acceptable if connecting to <code>localhost</code>.</li>
+<li>Click "Connect".</li>
+</ul>
+</li>
+<li>
+<p><strong>Navigator Window:</strong></p>
+<ul>
+<li>Once connected, the Navigator window will appear, showing all schemas and tables available in the specified database.</li>
+<li>Expand the schema where your dbt marts reside (e.g., <code>analytics</code> or <code>marts</code>).</li>
+<li>Select the fact tables (e.g., <code>fct_transactions</code>, <code>fct_daily_market_summary</code>) and dimension tables (e.g., <code>dim_date</code>, <code>dim_cryptocurrency</code>, <code>dim_block</code>) that you need for your analysis.</li>
+<li>You can preview the data for each selected table.</li>
+<li>Click "Load" (to import data directly) or "Transform Data" (to open the Power Query Editor for further shaping before loading). It's generally good practice to at least briefly review in Power Query Editor.</li>
+</ul>
+</li>
+</ol>
+<h2 id="best-practices-in-power-bi">Best Practices in Power BI<a class="headerlink" href="#best-practices-in-power-bi" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Use the Marts Layer:</strong></p>
+<ul>
+<li>Always connect to the tables in your dbt <code>marts</code> (or <code>analytics</code>) schema. These tables are cleaned, modeled, and optimized for reporting. Avoid connecting directly to raw or staging tables.</li>
+</ul>
+</li>
+<li>
+<p><strong>Data Modeling in Power BI (if needed):</strong></p>
+<ul>
+<li><strong>Relationships:</strong> Power BI will attempt to auto-detect relationships based on column names. Verify these and create them manually if needed. Ensure relationships are correctly defined between fact tables and dimension tables using their respective primary and foreign keys (e.g., <code>dim_date.date_key</code> to <code>fct_transactions.transaction_date_key</code>).</li>
+<li><strong>Cardinality:</strong> Set the correct cardinality (one-to-many, many-to-one) and cross-filter direction for your relationships.</li>
+<li><strong>Hide Foreign Keys:</strong> In the "Model" view, hide foreign key columns in fact tables from the "Report" view to simplify the field list for end-users. They should use attributes from dimension tables for filtering and grouping.</li>
+</ul>
+</li>
+<li>
+<p><strong>DAX for Measures:</strong></p>
+<ul>
+<li>Create explicit measures using DAX (Data Analysis Expressions) for all calculations and aggregations (e.g., <code>Total Transaction Value = SUM(fct_transactions[output_total_usd])</code>).</li>
+<li>Avoid using implicit measures (dragging numeric fields directly into visuals and relying on Power BI's default aggregation). Explicit measures offer more control and reusability.</li>
+<li>Organize measures into dedicated tables or using display folders.</li>
+</ul>
+</li>
+<li>
+<p><strong>Dimension Tables for Slicers and Filters:</strong></p>
+<ul>
+<li>Use columns from your dimension tables (<code>dim_date</code>, <code>dim_cryptocurrency</code>, etc.) for slicers, filters, and as axes in your visuals.</li>
+</ul>
+</li>
+<li>
+<p><strong>Optimize Performance:</strong></p>
+<ul>
+<li><strong>Reduce Cardinality:</strong> High cardinality columns (many unique values) can impact performance.</li>
+<li><strong>Calculated Columns vs. Measures:</strong> Prefer measures over calculated columns where possible, especially for aggregations. Calculated columns are computed row-by-row during data refresh and consume memory.</li>
+<li><strong>Filter Early:</strong> Apply filters in the Power Query Editor or at the report/page/visual level to reduce the amount of data processed.</li>
+<li><strong>Use <code>STAR SCHEMA</code> principles:</strong> This is inherently what dbt helps create.</li>
+</ul>
+</li>
+<li>
+<p><strong>Report Design:</strong></p>
+<ul>
+<li>Keep reports clean and uncluttered.</li>
+<li>Use appropriate visuals for the type of data and analysis.</li>
+<li>Provide clear titles and labels.</li>
+<li>Consider user experience and navigation.</li>
+</ul>
+</li>
+</ol>
+<h2 id="example-analysis-scenarios">Example Analysis Scenarios<a class="headerlink" href="#example-analysis-scenarios" title="Permanent link">&para;</a></h2>
+<p>Once connected, you can build visuals for:</p>
+<ul>
+<li><strong>Transaction Volume Over Time:</strong> Line chart with <code>dim_date.full_date</code> on the axis and a measure for <code>COUNTROWS(fct_transactions)</code> or <code>SUM(fct_transactions[output_total_usd])</code> as values, sliced by <code>dim_cryptocurrency.symbol</code>.</li>
+<li><strong>Average Transaction Fee by Cryptocurrency:</strong> Bar chart with <code>dim_cryptocurrency.symbol</code> on the axis and a measure for <code>AVERAGE(fct_transactions[fee_usd])</code> as values.</li>
+<li><strong>Price Trends:</strong> Line chart with <code>dim_date.full_date</code> on the axis and <code>AVERAGE(fct_daily_market_summary[price_usd])</code> as values, sliced by <code>dim_cryptocurrency.symbol</code>.</li>
+<li><strong>Number of Blocks Mined Per Day:</strong> Using <code>dim_block</code> joined with <code>dim_date</code>.</li>
+</ul>
+<p>By following these guidelines, you can effectively leverage the data prepared by the ELT pipeline to gain valuable insights into cryptocurrency activity and market trends using Power BI.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

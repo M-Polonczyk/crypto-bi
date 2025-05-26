@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://M-Polonczyk.github.io/crypto-bi/02_data_sources/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Data Sources - Crypto BI</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Crypto BI</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../01_architecture/" class="nav-link">System Architecture</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">Data Sources</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../03_ingestion_pipeline/" class="nav-link">Ingestion Pipeline</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">dbt Data Modeling</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href=".." class="dropdown-item">Home</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_01_dimensional_model/" class="dropdown-item">Dimensional Model</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_02_sources/" class="dropdown-item">Sources</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_03_staging_layer.md" class="dropdown-item">Staging Layer</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_04_marts_layer/" class="dropdown-item">Marts Layer</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_05_testing_and_quality.md" class="dropdown-item">Testing and Quality</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../05_airflow_orchestration/" class="nav-link">Airflow Orchestration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../06_powerbi_integration/" class="nav-link">Power BI Integration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../07_development_guide/" class="nav-link">Development Guide</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../08_troubleshooting/" class="nav-link">Troubleshooting</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../01_architecture/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../03_ingestion_pipeline/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/M-Polonczyk/crypto-bi/edit/main/docs/02_data_sources.md" class="nav-link">Edit on crypto-bi
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#data-sources" class="nav-link">Data Sources</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#1-blockchair-api" class="nav-link">1. Blockchair API</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#2-coingecko-api" class="nav-link">2. CoinGecko API</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#data-granularity-and-update-frequency" class="nav-link">Data Granularity and Update Frequency</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="data-sources">Data Sources<a class="headerlink" href="#data-sources" title="Permanent link">&para;</a></h1>
+<p>This project relies on external APIs to gather blockchain activity and cryptocurrency market data. The primary sources are the Blockchair API and the CoinGecko API.</p>
+<h2 id="1-blockchair-api">1. Blockchair API<a class="headerlink" href="#1-blockchair-api" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Website:</strong> <a href="https://blockchair.com/api/docs">https://blockchair.com/api/docs</a></li>
+<li><strong>Purpose:</strong> Provides comprehensive data for various blockchains. In this project, it's used for Bitcoin (BTC), Ethereum (ETH), and Dogecoin (DOGE).</li>
+<li><strong>Data Points Extracted (Examples):</strong></li>
+<li><strong>Blocks:</strong><ul>
+<li>Block ID / Height</li>
+<li>Block Hash</li>
+<li>Timestamp</li>
+<li>Transaction Count</li>
+<li>Block Size</li>
+<li>Difficulty</li>
+<li>Miner information (if available)</li>
+</ul>
+</li>
+<li><strong>Transactions:</strong><ul>
+<li>Transaction Hash (ID)</li>
+<li>Block ID (confirming block)</li>
+<li>Timestamp</li>
+<li>Fees (in native currency and USD)</li>
+<li>Input Count &amp; Output Count</li>
+<li>Total Input Value &amp; Total Output Value (in native currency and USD)</li>
+<li>Transaction Size</li>
+<li>Coinbase status</li>
+<li>Input addresses and values (potentially, for more detailed analysis)</li>
+<li>Output addresses and values (potentially, for more detailed analysis)</li>
+</ul>
+</li>
+<li><strong>Addresses (Potential Future Enhancement):</strong><ul>
+<li>Address balance</li>
+<li>Transaction count associated with an address</li>
+<li>First seen / Last seen timestamps</li>
+</ul>
+</li>
+<li><strong>Endpoints Used (Examples):</strong></li>
+<li><code>/&lt;coin&gt;/blocks?date=&lt;YYYY-MM-DD&gt;&amp;limit=&lt;N&gt;</code>: To fetch blocks mined on a specific date.</li>
+<li><code>/&lt;coin&gt;/transactions?date=&lt;YYYY-MM-DD&gt;&amp;limit=&lt;N&gt;</code>: To fetch transactions confirmed on a specific date.</li>
+<li>More specific endpoints might be used for fetching details of a single block or transaction if needed.</li>
+<li><strong>Authentication:</strong> Blockchair offers a generous free tier. For higher rate limits or more features, an API key might be required and can be configured via environment variables.</li>
+<li><strong>Rate Limits:</strong> The free tier has rate limits (e.g., requests per minute/hour). Ingestion scripts include basic delays (<code>time.sleep()</code>) to respect these limits. For high-volume backfills, more sophisticated rate limiting and retry logic might be necessary.</li>
+<li><strong>Data Format:</strong> JSON.</li>
+<li><strong>Ingestion Script:</strong> <code>src/ingestion/blockchair_ingestor.py</code></li>
+</ul>
+<h2 id="2-coingecko-api">2. CoinGecko API<a class="headerlink" href="#2-coingecko-api" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Website:</strong> <a href="https://www.coingecko.com/en/api/documentation">https://www.coingecko.com/en/api/documentation</a></li>
+<li><strong>Purpose:</strong> Provides cryptocurrency market data, including prices, trading volumes, market capitalization, and historical data.</li>
+<li><strong>Data Points Extracted (Examples for BTC, ETH, DOGE):</strong></li>
+<li><strong>Historical Price:</strong> Daily closing price in USD.</li>
+<li><strong>Total Volume:</strong> Daily total trading volume in USD across tracked exchanges.</li>
+<li><strong>Market Capitalization:</strong> Daily market cap in USD.</li>
+<li><strong>Endpoints Used (Examples):</strong></li>
+<li><code>/coins/{id}/history?date={dd-mm-yyyy}&amp;localization=false</code>: To fetch historical market data (price, volume, market cap) for a specific coin on a specific date. The <code>id</code> corresponds to CoinGecko's unique identifier for the coin (e.g., "bitcoin", "ethereum", "dogecoin").</li>
+<li><strong>Authentication:</strong></li>
+<li><strong>Public API:</strong> Available without an API key, but with stricter rate limits.</li>
+<li><strong>Pro API:</strong> Requires an API key (configured via <code>COINGECKO_API_KEY</code> environment variable) for higher rate limits and additional features. The ingestion script supports using the Pro API if an key is provided.</li>
+<li><strong>Rate Limits:</strong> The public API has rate limits (e.g., 10-30 calls per minute). The Pro API offers significantly higher limits. Ingestion scripts include basic delays (<code>time.sleep()</code>) between calls.</li>
+<li><strong>Data Format:</strong> JSON.</li>
+<li><strong>Ingestion Script:</strong> <code>src/ingestion/coingecko_ingestor.py</code></li>
+</ul>
+<h2 id="data-granularity-and-update-frequency">Data Granularity and Update Frequency<a class="headerlink" href="#data-granularity-and-update-frequency" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Blockchain Data (Blockchair):</strong> Aiming for daily granularity, fetching all blocks and transactions confirmed on the previous day.</li>
+<li><strong>Market Data (CoinGecko):</strong> Daily granularity, fetching the previous day's closing price, total volume, and market cap.</li>
+</ul>
+<p>The Airflow pipeline is typically scheduled to run once daily to update the data warehouse with the previous day's information.</p>
+<p>```</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

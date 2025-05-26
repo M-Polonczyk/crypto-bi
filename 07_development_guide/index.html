@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://M-Polonczyk.github.io/crypto-bi/07_development_guide/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Development Guide - Crypto BI</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Crypto BI</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../01_architecture/" class="nav-link">System Architecture</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../02_data_sources/" class="nav-link">Data Sources</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../03_ingestion_pipeline/" class="nav-link">Ingestion Pipeline</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">dbt Data Modeling</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href=".." class="dropdown-item">Home</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_01_dimensional_model/" class="dropdown-item">Dimensional Model</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_02_sources/" class="dropdown-item">Sources</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_03_staging_layer.md" class="dropdown-item">Staging Layer</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_04_marts_layer/" class="dropdown-item">Marts Layer</a>
+</li>
+                                    
+<li>
+    <a href="../04_dbt_data_modeling/04_05_testing_and_quality.md" class="dropdown-item">Testing and Quality</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../05_airflow_orchestration/" class="nav-link">Airflow Orchestration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../06_powerbi_integration/" class="nav-link">Power BI Integration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">Development Guide</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../08_troubleshooting/" class="nav-link">Troubleshooting</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../06_powerbi_integration/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../08_troubleshooting/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/M-Polonczyk/crypto-bi/edit/main/docs/07_development_guide.md" class="nav-link">Edit on crypto-bi
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#development-guide" class="nav-link">Development Guide</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#local-development-setup" class="nav-link">Local Development Setup</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#working-with-apache-airflow-dags" class="nav-link">Working with Apache Airflow DAGs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#working-with-python-ingestion-scripts" class="nav-link">Working with Python Ingestion Scripts</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#working-with-dbt" class="nav-link">Working with dbt</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#coding-standards-and-conventions" class="nav-link">Coding Standards and Conventions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#branching-strategy-example" class="nav-link">Branching Strategy (Example)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#environment-variables" class="nav-link">Environment Variables</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#updating-dependencies" class="nav-link">Updating Dependencies</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="development-guide">Development Guide<a class="headerlink" href="#development-guide" title="Permanent link">&para;</a></h1>
+<p>This guide provides instructions and best practices for developers contributing to the Crypto Analytics BI project.</p>
+<h2 id="local-development-setup">Local Development Setup<a class="headerlink" href="#local-development-setup" title="Permanent link">&para;</a></h2>
+<p>Refer to the main <code>README.md</code> for detailed instructions on setting up the Dockerized environment using <code>docker-compose</code>. Key aspects include:</p>
+<ul>
+<li>Cloning the repository.</li>
+<li>Creating and configuring the <code>.env</code> file.</li>
+<li>Ensuring Docker Desktop (or Docker Engine + Compose) is running.</li>
+<li>Building the Docker images (<code>docker-compose build</code>).</li>
+<li>Starting the services (<code>docker-compose up -d</code>).</li>
+<li>Initializing Airflow (database and user creation) on the first run.</li>
+</ul>
+<h2 id="working-with-apache-airflow-dags">Working with Apache Airflow DAGs<a class="headerlink" href="#working-with-apache-airflow-dags" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Location:</strong> DAG files are located in the <code>./dags/</code> directory, which is mounted into the Airflow scheduler and webserver containers.</li>
+<li><strong>Creating/Modifying DAGs:</strong></li>
+<li>Edit Python files in the <code>./dags/</code> directory on your host machine.</li>
+<li>Airflow's scheduler will automatically pick up changes to DAG files (usually within a few minutes, configurable in <code>airflow.cfg</code>).</li>
+<li>New DAGs will appear in the Airflow UI.</li>
+<li><strong>Testing DAGs:</strong></li>
+<li><strong>Airflow UI:</strong> Trigger DAGs manually, clear task states, and inspect logs.</li>
+<li><strong>Airflow CLI:</strong> You can <code>exec</code> into the <code>airflow-scheduler</code> or <code>airflow-webserver</code> container and use the Airflow CLI for more advanced testing (e.g., <code>airflow dags test &lt;dag_id&gt; &lt;execution_date&gt;</code>).</li>
+<li><strong>PYTHONPATH:</strong> The <code>src/</code> directory is mounted into Airflow containers and added to <code>PYTHONPATH</code> (often done in the DAG file itself or via Dockerfile configuration) so that DAGs can import custom Python modules from <code>src.ingestion</code> or <code>src.common</code>.</li>
+</ul>
+<h2 id="working-with-python-ingestion-scripts">Working with Python Ingestion Scripts<a class="headerlink" href="#working-with-python-ingestion-scripts" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Location:</strong> Ingestion logic resides in <code>./src/ingestion/</code>. Common utilities are in <code>./src/common/</code>.</li>
+<li><strong>Development:</strong></li>
+<li>You can develop and test these scripts locally on your host machine if you have Python and the necessary libraries (<code>requests</code>, <code>psycopg2-binary</code>) installed, and can connect to the Dockerized PostgreSQL (<code>postgres_app_db</code> on <code>localhost:5432</code>).</li>
+<li>Alternatively, make changes and test by triggering the corresponding Airflow tasks, then inspecting logs via the Airflow UI.</li>
+<li><strong>Dependencies:</strong> Python dependencies for Airflow (and thus for the environment where ingestion scripts run within Docker) are managed in <code>docker/airflow/requirements_airflow.txt</code>. If you add new dependencies for your ingestion scripts, update this file and rebuild the Airflow Docker image (<code>docker-compose build airflow-scheduler</code>).</li>
+</ul>
+<h2 id="working-with-dbt">Working with dbt<a class="headerlink" href="#working-with-dbt" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Location:</strong> The dbt project is in <code>./dbt_project/</code>. This directory is mounted into the Airflow containers.</li>
+<li><strong>dbt <code>profiles.yml</code>:</strong></li>
+<li>For Airflow to run <code>dbt</code> commands, it needs a <code>profiles.yml</code> that can connect to the <code>postgres_app_db</code> service.</li>
+<li>The recommended approach is to use environment variables within <code>profiles.yml</code> (e.g., <code>host: "{{ env_var('DB_HOST') }}"</code>). These environment variables (<code>DB_HOST</code>, <code>DB_USER_DBT</code>, etc.) are passed from the project's root <code>.env</code> file to the Airflow containers via <code>docker-compose.yaml</code>.</li>
+<li>If running dbt commands locally on your host machine (outside Docker, but connecting to the Dockerized DB), your local <code>~/.dbt/profiles.yml</code> should point to <code>host: localhost</code>, <code>port: 5432</code>, and use the <code>DB_USER_APP</code>, <code>DB_PASSWORD_APP</code>, <code>DB_NAME_APP</code> credentials from the root <code>.env</code> file.</li>
+<li><strong>Running dbt Commands:</strong></li>
+<li>
+<p><strong>Via Airflow:</strong> Airflow DAGs use <code>BashOperator</code> to execute <code>dbt</code> commands. This is the standard way transformations are run in the orchestrated pipeline.</p>
+<div class="highlight"><pre><span></span><code>```bash
+# Example command in Airflow DAG&#39;s BashOperator
+dbt run --project-dir /opt/airflow/dbt_project_for_airflow --profiles-dir /opt/airflow/dbt_project_for_airflow 
+# (if profiles.yml is also mounted there, or relies purely on env_vars)
+```
+</code></pre></div>
+</li>
+<li>
+<p><strong>Manually within Docker:</strong>
+        1. <code>docker exec -it &lt;airflow_container_name_or_id&gt; bash</code>
+        2. <code>cd /opt/airflow/dbt_project_for_airflow</code>
+        3. <code>dbt run --select my_model</code></p>
+</li>
+<li><strong>Locally on Host (if dbt installed):</strong>
+        1. Ensure your local <code>~/.dbt/profiles.yml</code> is configured for <code>localhost:5432</code>.
+        2. <code>cd dbt_project/</code>
+        3. <code>dbt run --select my_model</code></li>
+<li><strong>Developing dbt Models:</strong></li>
+<li>Edit SQL files in <code>./dbt_project/models/</code>.</li>
+<li>Follow dbt best practices: use staging layers, create modular models, write tests, and document your models in <code>.yml</code> files.</li>
+<li>Run <code>dbt compile</code> to see the compiled SQL.</li>
+<li>Run <code>dbt run</code> and <code>dbt test</code> frequently during development.</li>
+<li><strong>dbt Dependencies:</strong> If you add packages to <code>dbt_project/packages.yml</code>, run <code>dbt deps</code> (locally or via an Airflow task) to install them. The <code>target/</code> and <code>dbt_packages/</code> directories are gitignored.</li>
+</ul>
+<h2 id="coding-standards-and-conventions">Coding Standards and Conventions<a class="headerlink" href="#coding-standards-and-conventions" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Python:</strong> Follow PEP 8 guidelines. Use a linter like Flake8 or Black for code formatting.</li>
+<li><strong>SQL (dbt):</strong></li>
+<li>Use consistent formatting (e.g., <a href="https://sqlfluff.com/">SQLFluff</a> can be integrated with dbt).</li>
+<li>Use CTEs for readability in complex models.</li>
+<li>Clearly name models, columns, and CTEs.</li>
+<li>Comment your code where necessary.</li>
+<li><strong>Airflow DAGs:</strong></li>
+<li>Use clear task names.</li>
+<li>Define explicit dependencies.</li>
+<li>Keep DAG definitions concise; move complex Python logic into separate modules in <code>src/</code>.</li>
+<li><strong>Commit Messages:</strong> Follow conventional commit message formats (e.g., <code>feat: add new transaction fact model</code>, <code>fix: correct coingecko api date formatting</code>).</li>
+</ul>
+<h2 id="branching-strategy-example">Branching Strategy (Example)<a class="headerlink" href="#branching-strategy-example" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>main</code> (or <code>master</code>): Represents the stable, production-ready state.</li>
+<li><code>develop</code>: Integration branch for features.</li>
+<li>Feature branches: <code>feature/&lt;ticket_id&gt;-&lt;short-description&gt;</code> (e.g., <code>feature/CRYPTO-123-add-doge-market-data</code>).</li>
+<li>Bugfix branches: <code>fix/&lt;ticket_id&gt;-&lt;short-description&gt;</code>.</li>
+<li>Pull Requests (PRs) should be used to merge feature/fix branches into <code>develop</code>, and <code>develop</code> into <code>main</code>. PRs should be reviewed.</li>
+</ul>
+<h2 id="environment-variables">Environment Variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h2>
+<ul>
+<li>All sensitive credentials (API keys, database passwords) and environment-specific configurations should be managed via the root <code>.env</code> file and accessed as environment variables within the Docker containers.</li>
+<li><strong>DO NOT commit the <code>.env</code> file to Git.</strong> A <code>.env.example</code> file should be provided.</li>
+</ul>
+<h2 id="updating-dependencies">Updating Dependencies<a class="headerlink" href="#updating-dependencies" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Python (Airflow/Ingestion):</strong> Update versions in <code>docker/airflow/requirements_airflow.txt</code>, then rebuild the Docker image: <code>docker-compose build airflow-scheduler</code> (or relevant service).</li>
+<li><strong>dbt Packages:</strong> Update versions in <code>dbt_project/packages.yml</code>, then run <code>dbt deps</code> (either locally, within the container, or via an Airflow task).</li>
+</ul>
+<p>This guide provides a starting point for development. Adapt and expand it as your team and project grow.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
