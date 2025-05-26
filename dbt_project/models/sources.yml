@@ -1,0 +1,30 @@
+version: 2
+
+sources:
+  - name: raw_blockchair
+    schema: public # Assuming your ingestion scripts load to 'public' or 'raw_data'
+    tables:
+      - name: raw_blockchain_blocks
+        description: "Raw blocks data from Blockchair API."
+        columns:
+          - name: block_id
+            tests: [unique, not_null]
+          - name: coin_symbol
+          - name: block_hash
+      - name: raw_blockchain_transactions
+        description: "Raw transactions data from Blockchair API."
+        columns:
+          - name: tx_hash
+            tests: [unique, not_null]
+          - name: coin_symbol
+
+  - name: raw_coingecko
+    schema: public # Assuming your ingestion scripts load to 'public' or 'raw_data'
+    tables:
+      - name: raw_market_prices_volumes
+        description: "Raw daily prices and volumes from CoinGecko API."
+        columns:
+          - name: coin_id
+            tests: [not_null]
+          - name: price_date
+            tests: [not_null]

@@ -1,0 +1,34 @@
+name: 'crypto_analytics'
+version: '1.0.0'
+config-version: 2
+
+profile: 'crypto_analytics_onprem' # Matches a profile name in profiles.yml
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"  # directory for compiled SQL files
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  crypto_analytics:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: ephemeral # Or view/table depending on use case
+      +schema: intermediate
+    marts:
+      +materialized: table
+      +schema: analytics
+
+seeds:
+  crypto_analytics:
+    +schema: raw_seeds
+    +quote_columns: false # Set to true if your CSV headers need quoting

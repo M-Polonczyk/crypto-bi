@@ -1,0 +1,5 @@
+packages:
+  - package: dbt-labs/dbt_utils
+    version: 1.1.1 # Check for the latest version
+  # - package: dbt-labs/dbt_date # Formerly calogica/dbt_date
+  #   version: 0.10.0 # Check for latest for more robust date dimension

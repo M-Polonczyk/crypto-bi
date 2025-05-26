@@ -1,0 +1,103 @@
+services:
+  x-airflow-common: &airflow-common
+    build:
+      context: ./docker/airflow
+    env_file:
+      - .env
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_airflow_meta:5432/${POSTGRES_DB}
+      - DB_USER_DBT=${DB_USER_APP}
+      - DB_PASSWORD_DBT=${DB_PASSWORD_APP}
+      - DB_NAME=${DB_NAME_APP}
+      - DBT_PROFILES_DIR=/opt/airflow/dbt_project_for_airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./src:/opt/airflow/src
+      - ./dbt_project:/opt/airflow/dbt_project_for_airflow
+      # If profiles.yml is outside dbt_project and needs to be mounted:
+      # - ./path_to_your_host_profiles_yml/profiles.yml:/opt/airflow/profiles_dir/profiles.yml 
+      # Then set DBT_PROFILES_DIR=/opt/airflow/profiles_dir in environment
+    depends_on:
+      postgres_airflow_meta:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    user: "${AIRFLOW_UID:-50000}:0" # Run as host user to avoid permission issues
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=default_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./deocker/postgres/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    healthcheck:
+      test: ["CMD-SHELL", "airflow jobs check --job-type SchedulerJob --hostname $(hostname)"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080" # Airflow Web UI
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Optional: Airflow Worker (if using CeleryExecutor, not needed for LocalExecutor)
+  # airflow-worker:
+  #   <<: *airflow-common
+  #   command: worker
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "airflow jobs check --job-type WorkerJob --hostname $(hostname)"]
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 5
+
+  # Optional: Flower for Celery monitoring (if using CeleryExecutor)
+  # flower:
+  #   <<: *airflow-common
+  #   command: celery flower
+  #   ports:
+  #     - "5555:5555"
+
+  # init-airflow: # Use this for initial setup like creating connections/users
+  #   <<: *airflow-common
+  #   entrypoint: /bin/bash
+  #   command:
+  #     - -c
+  #     - |
+  #       airflow db init && \
+  #       airflow users create \
+  #         --username ${_AIRFLOW_WWW_USER_USERNAME:-airflow} \
+  #         --firstname Airflow \
+  #         --lastname Admin \
+  #         --role Admin \
+  #         --email admin@example.org \
+  #         --password ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+  #   restart: on-failure # Runs once
+
+volumes:
+  airflow_db_data:
+  postgres_data:
