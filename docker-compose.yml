@@ -22,8 +22,6 @@ services:
       # - ./path_to_your_host_profiles_yml/profiles.yml:/opt/airflow/profiles_dir/profiles.yml 
       # Then set DBT_PROFILES_DIR=/opt/airflow/profiles_dir in environment
     depends_on:
-      postgres_airflow_meta:
-        condition: service_healthy
       postgres:
         condition: service_healthy
     user: "${AIRFLOW_UID:-50000}:0" # Run as host user to avoid permission issues

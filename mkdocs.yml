@@ -1,0 +1,39 @@
+site_name: Crypto BI
+site_description: A comprehensive guide to building a cryptocurrency business intelligence platform using dbt, Airflow, and Power BI.
+site_url: https://M-Polonczyk.github.io/crypto-bi
+repo_url: https://github.com/M-Polonczyk/crypto-bi
+repo_name: crypto-bi
+edit_uri: edit/main/docs
+
+nav:
+  - "Home": "index.md"
+  - "System Architecture": "01_architecture.md"
+  - "Data Sources": "02_data_sources.md"
+  - "Ingestion Pipeline": "03_ingestion_pipeline.md"
+  - "dbt Data Modeling":
+      - "Overview": "index.md"
+      - "Dimensional Model": "04_dbt_data_modeling/04_01_dimensional_model.md"
+      - "Sources": "04_dbt_data_modeling/04_02_sources.md"
+      - "Staging Layer": "04_dbt_data_modeling/04_03_staging_layer.md"
+      - "Marts Layer": "04_dbt_data_modeling/04_04_marts_layer.md"
+      - "Testing and Quality": "04_dbt_data_modeling/04_05_testing_and_quality.md"
+  - "Airflow Orchestration": "05_airflow_orchestration.md"
+  - "Power BI Integration": "06_powerbi_integration.md"
+  - "Development Guide": "07_development_guide.md"
+  - "Troubleshooting": "08_troubleshooting.md"
+
+plugins:
+  - search
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
