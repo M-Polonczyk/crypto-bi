@@ -51,9 +51,11 @@ The primary cryptocurrencies targeted for analysis are Bitcoin (BTC), Ethereum (
 ├── dags/                  # Airflow DAG definitions
 ├── dbt_project/           # dbt models, tests, seeds, etc.
 ├── docker/                # Docker related files (e.g., custom Airflow Dockerfile)
-│   └── airflow/
-│       ├── Dockerfile
-│       └── requirements_airflow.txt
+│   ├── airflow/
+│   │   ├── Dockerfile
+│   │   └── requirements_airflow.txt
+│   └── postgres/
+│       └── init.sql
 ├── docs/                  # Project documentation
 ├── logs/                  # (Mounted by Docker) Airflow & application logs
 ├── plugins/               # (Mounted by Docker) Airflow plugins (if any)
