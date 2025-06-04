@@ -8,7 +8,7 @@ def get_yesterday_date_str(format="%Y-%m-%d"):
 def get_date_str_for_coingecko(date_obj=None):
     """Returns date as dd-mm-yyyy string for CoinGecko."""
     if date_obj is None:
-        date_obj = datetime.now() - timedelta(days=1) # Default to yesterday
+        date_obj = datetime.now() - timedelta(days=1)
     return date_obj.strftime("%d-%m-%Y")
 
 if __name__ == '__main__':

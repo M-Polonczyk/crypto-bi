@@ -2,7 +2,7 @@ import requests
 import logging
 from datetime import datetime
 from .db_utils import get_db_connection, execute_query, execute_many
-from ..common.utils import get_yesterday_date_str
+from src.common.utils import get_yesterday_date_str
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -49,14 +49,14 @@ def fetch_blockchair_data(coin, endpoint_path, params=None):
     url = f"{BLOCKCHAIR_BASE_URL}/{coin}/{endpoint_path}"
     try:
         response = requests.get(url, params=params)
-        response.raise_for_status()  # Raises an HTTPError for bad responses (4XX or 5XX)
+        response.raise_for_status()
         data = response.json()
         logging.info(f"Successfully fetched data from {url} with params {params}")
-        return data.get('data', []) # The actual data is usually under the 'data' key
+        return data.get('data', [])
     except requests.exceptions.RequestException as e:
         logging.error(f"Error fetching data from {url}: {e}")
         return None
-    except ValueError: # Includes JSONDecodeError
+    except ValueError:
         logging.error(f"Error decoding JSON from {url}")
         return None
 
@@ -86,18 +86,14 @@ def ingest_recent_blocks(coin_symbol="bitcoin", date_str=None):
         return
     try:
         create_blockchair_tables(conn)
-        # Blockchair /<coin>/blocks can accept a 'date' parameter.
-        # E.g., https://api.blockchair.com/bitcoin/blocks?date=2023-01-15&limit=10
-        # It returns blocks *mined on that date*.
-        api_data = fetch_blockchair_data(coin_symbol.lower(), "blocks", params={"date": date_str, "limit": 500}) # Adjust limit
-
+        api_data = fetch_blockchair_data(coin_symbol.lower(), "blocks", params={"date": date_str})
+        print(f"Fetched {len(api_data)} blocks for {coin_symbol} on {date_str}")
         if not api_data:
             logging.warning(f"No block data received from Blockchair for {coin_symbol} on {date_str}")
             return
-
         blocks_to_insert = []
-        for block_hash, block_details in api_data.items(): # Blockchair blocks are often dicts with hash as key
-            if not isinstance(block_details, dict): continue # Skip if not a dict
+        for block_hash, block_details in api_data.items(): # Blockchair blocks are dicts with hash as key
+            if not isinstance(block_details, dict): continue
             blocks_to_insert.append((
                 block_details.get('id'),
                 coin_symbol.upper(),
@@ -139,8 +135,8 @@ def ingest_transactions_for_blocks(coin_symbol="bitcoin", block_ids=None):
     else:
         # This part would ideally iterate through block_ids and fetch transactions per block if API structure requires it.
         # However, Blockchair's /<coin>/transactions?date=YYYY-MM-DD is simpler if it meets needs.
-        logging.info(f"Fetching transactions by block_ids is more complex with Blockchair's general API. "
-                     f"Using date-based transaction fetching as a fallback/alternative.")
+        logging.info("Fetching transactions by block_ids is more complex with Blockchair's general API. "
+                     "Using date-based transaction fetching as a fallback/alternative.")
         date_str = get_yesterday_date_str() # Assuming date for which blocks were fetched
         api_data = fetch_blockchair_data(coin_symbol.lower(), "transactions", params={"date": date_str, "limit": 1000, "s": "time(asc)"})
 

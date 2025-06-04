@@ -1,4 +1,4 @@
-apache-airflow-providers-postgres
+apache-airflow-providers-postgres>=6.2.0
 dbt-postgres>=1.6.0
 requests
-psycopg2-binary
+psycopg2-binary==2.9.10

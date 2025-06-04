@@ -1,4 +1,4 @@
-FROM apache/airflow:2.8.1-python3.9
+FROM apache/airflow:slim-3.0.2rc1-python3.9
 
 USER root
 # Install system dependencies if needed for psycopg2 or other Python packages
