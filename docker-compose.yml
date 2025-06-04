@@ -4,7 +4,6 @@ services:
       context: ./docker/airflow
     env_file:
       - .env
-    command: db migrate
     environment:
       &airflow-common-env
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
@@ -21,7 +20,7 @@ services:
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
       - ./src:/opt/airflow/src
-      # - ./dbt_project:/opt/airflow/dbt_project_for_airflow
+      - ./dbt_project:/opt/airflow/dbt_project_for_airflow
     depends_on:
       postgres:
         condition: service_healthy
