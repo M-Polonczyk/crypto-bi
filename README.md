@@ -143,7 +143,7 @@ For detailed information on the `dbt_project` structure, refer to `dbt_project/R
     - `postgres_airflow_meta`: PostgreSQL database for Airflow metadata.
     - `postgres_app_db`: PostgreSQL database for your application data (dbt target).
     - `airflow-scheduler`: Airflow scheduler.
-    - `airflow-webserver`: Airflow web UI.
+    - `airflow-api-server`: Airflow web UI.
 
 ### Initializing Airflow (First Time)
 
@@ -152,7 +152,7 @@ After the containers are up and running for the first time, you need to initiali
 1. **Initialize the Airflow metadata database:**
 
     ```bash
-    docker-compose run --rm airflow-webserver airflow db init
+    docker-compose run --rm airflow-api-server airflow db init
     ```
 
     *(If you see errors about migrations, try `airflow db migrate` first, then `airflow db init` if it's an older setup)*
@@ -160,7 +160,7 @@ After the containers are up and running for the first time, you need to initiali
 2. **Create an Airflow admin user:**
 
     ```bash
-    docker-compose run --rm airflow-webserver airflow users create \
+    docker-compose run --rm airflow-api-server airflow users create \
         --username admin \
         --firstname YourFirstName \
         --lastname YourLastName \
@@ -217,7 +217,7 @@ You can execute dbt commands directly within the running Airflow worker/schedule
 
 **Inside the Airflow container:**
 
-1. Find the container ID: `docker ps` (look for `airflow-scheduler` or `airflow-webserver`).
+1. Find the container ID: `docker ps` (look for `airflow-scheduler` or `airflow-api-server`).
 2. Exec into the container:
 
     ```bash
