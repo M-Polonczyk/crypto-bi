@@ -1,8 +1,8 @@
-name: 'crypto_analytics'
-version: '1.0.0'
+name: "crypto_analytics"
+version: "1.0.0"
 config-version: 2
 
-profile: 'crypto_analytics_onprem' # Matches a profile name in profiles.yml
+profile: "crypto_analytics" # Matches a profile name in profiles.yml
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -11,7 +11,7 @@ seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 
-target-path: "target"  # directory for compiled SQL files
+target-path: "target" # directory for compiled SQL files
 clean-targets:
   - "target"
   - "dbt_packages"

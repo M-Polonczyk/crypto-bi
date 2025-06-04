@@ -111,7 +111,7 @@ For detailed information on the `dbt_project` structure, refer to `dbt_project/R
 
     ```yaml
     # In your ~/.dbt/profiles.yml or the one mounted to Airflow
-    crypto_analytics_onprem:
+    crypto_analytics:
       target: dev
       outputs:
         dev:

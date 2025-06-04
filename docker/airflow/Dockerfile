@@ -1,6 +1,5 @@
 FROM apache/airflow:slim-3.0.2rc1-python3.9
 
-USER root
 # Install system dependencies if needed for psycopg2 or other Python packages
 # RUN apt-get update && apt-get install -y --no-install-recommends \
 #     build-essential \
@@ -11,3 +10,8 @@ USER airflow
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+COPY entrypoint.sh /entrypoint.sh
+# COPY start.sh /start.sh
+
+# ENTRYPOINT ["/entrypoint.sh"]

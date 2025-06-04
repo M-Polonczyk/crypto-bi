@@ -1,0 +1,23 @@
+crypto_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DB_HOST', 'localhost') }}"
+      port: "{{ env_var('DB_PORT', 5432) | int }}"
+      user: "{{ env_var('DB_USER_DBT') }}"
+      pass: "{{ env_var('DB_PASSWORD_DBT') }}"
+      dbname: "{{ env_var('DB_NAME') }}"
+      schema: "{{ env_var('DBT_DEFAULT_SCHEMA', 'dbt_dev_user') }}" # Default schema for dbt runs
+      threads: 4
+      keepalives_idle: 0
+
+    prod:
+      type: postgres
+      host: "{{ env_var('DB_HOST_PROD') }}"
+      port: "{{ env_var('DB_PORT_PROD', 5432) | int }}"
+      user: "{{ env_var('DB_USER_DBT_PROD') }}"
+      pass: "{{ env_var('DB_PASSWORD_DBT_PROD') }}"
+      dbname: "{{ env_var('DB_NAME_PROD') }}"
+      schema: analytics # Final models go into 'analytics' schema in prod
+      threads: 8
