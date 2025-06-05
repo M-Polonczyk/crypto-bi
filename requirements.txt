@@ -1,2 +1,5 @@
-requests>=2.32.3
-psycopg2-binary>=2.9.10
+apache-airflow-providers-postgres>=6.2.0
+dbt-postgres>=1.6.0
+requests
+psycopg2-binary==2.9.10
+flask-appbuilder>=4.7.0

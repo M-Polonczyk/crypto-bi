@@ -9,9 +9,10 @@ FROM apache/airflow:slim-3.0.2rc1-python3.9
 USER airflow
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt \
+  && rm requirements.txt
 
-COPY entrypoint.sh /entrypoint.sh
-# COPY start.sh /start.sh
+COPY ./docker/airflow/entrypoint.sh /entrypoint.sh
+# COPY ./docker/airflow/start.sh /start.sh
 
 # ENTRYPOINT ["/entrypoint.sh"]
