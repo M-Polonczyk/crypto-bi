@@ -1,7 +1,7 @@
 import requests
 import logging
 from datetime import datetime
-from .db_utils import get_db_connection, execute_query, execute_many
+from src.ingestion.db_utils import get_db_connection, execute_query, execute_many
 from src.common.utils import get_yesterday_date_str
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
