@@ -36,7 +36,7 @@ def ingest_all_coingecko_data_callable():
 
 with DAG(
     dag_id='crypto_data_ingestion_v1',
-    schedule_interval='@daily', # Run daily
+    schedule='@daily', # Run daily
     start_date=datetime(2023, 1, 1), # Adjust start date
     catchup=False, # Set to True if you want to backfill
     tags=['crypto', 'ingestion'],
