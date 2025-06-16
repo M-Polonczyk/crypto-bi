@@ -10,18 +10,16 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-    AIRFLOW__CORE__FERNET_KEY: 'nAm_Nk3HWGEjLkmfYJyOmCSlRYhuRFh8Uxt1KgNI5WA='
     AIRFLOW__CORE__LOAD_EXAMPLES: true
-    AIRFLOW__WEBSERVER__SECRET_KEY: 'SauxHwK5EeHNBIoNeguh+Q=='
     DB_USER_DBT: ${DB_USER_APP}
     DB_PASSWORD_DBT: ${DB_PASSWORD_APP}
     DB_NAME: ${DB_NAME_APP}
     DBT_PROFILES_DIR: /opt/airflow/dbt_project_for_airflow
     AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-api-server:8080/execution/'
     # The following line can be used to set a custom config file, stored in the local config folder
-    # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
+    AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
   volumes:
-    # - ./config:/opt/airflow/config
+    - ./config:/opt/airflow/config
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
@@ -38,10 +36,11 @@ services:
     <<: *airflow-common
     command: scheduler
     healthcheck:
-      test: ["CMD-SHELL", "airflow jobs check --job-type SchedulerJob --hostname $(hostname)"]
-      interval: 10s
+      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 30s
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
