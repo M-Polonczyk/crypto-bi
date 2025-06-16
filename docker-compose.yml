@@ -8,9 +8,11 @@ x-airflow-common: &airflow-common
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
-    AIRFLOW__CORE__LOAD_EXAMPLES: False
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    AIRFLOW__CORE__FERNET_KEY: 'nAm_Nk3HWGEjLkmfYJyOmCSlRYhuRFh8Uxt1KgNI5WA='
+    AIRFLOW__CORE__LOAD_EXAMPLES: true
+    AIRFLOW__WEBSERVER__SECRET_KEY: 'SauxHwK5EeHNBIoNeguh+Q=='
     DB_USER_DBT: ${DB_USER_APP}
     DB_PASSWORD_DBT: ${DB_PASSWORD_APP}
     DB_NAME: ${DB_NAME_APP}
@@ -183,7 +185,7 @@ services:
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: "0:0"
 
-  airflow-cli:
+  cli:
     <<: *airflow-common
     profiles:
       - debug
