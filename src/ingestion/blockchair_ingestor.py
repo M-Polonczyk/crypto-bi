@@ -87,10 +87,10 @@ def ingest_recent_blocks(coin_symbol="bitcoin", date_str=None):
     try:
         create_blockchair_tables(conn)
         api_data = fetch_blockchair_data(coin_symbol.lower(), "blocks", params={"date": date_str})
-        print(f"Fetched {len(api_data)} blocks for {coin_symbol} on {date_str}")
         if not api_data:
             logging.warning(f"No block data received from Blockchair for {coin_symbol} on {date_str}")
             return
+        print(f"Fetched {len(api_data)} blocks for {coin_symbol} on {date_str}")
         blocks_to_insert = []
         for block_hash, block_details in api_data.items(): # Blockchair blocks are dicts with hash as key
             if not isinstance(block_details, dict): continue

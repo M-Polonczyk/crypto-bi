@@ -8,11 +8,11 @@ def get_db_connection():
     """Establishes a connection to the PostgreSQL database."""
     try:
         conn = psycopg2.connect(
-            host=os.getenv("DB_HOST", "localhost"),
-            port=os.getenv("DB_PORT", "5432"),
-            dbname=os.getenv("DB_NAME", "crypto_db"),
-            user=os.getenv("DB_USER", "user"),
-            password=os.getenv("DB_PASSWORD", "password")
+            host=os.getenv("DB_HOST_APP", "localhost"),
+            port=os.getenv("DB_PORT_APP", "5432"),
+            dbname=os.getenv("DB_NAME_APP", "crypto_db"),
+            user=os.getenv("DB_USER_APP", "airflow_user"),
+            password=os.getenv("DB_PASSWORD_APP", "airflow_pass")
         )
         logging.info("Successfully connected to the database.")
         return conn

@@ -2,7 +2,7 @@ import requests
 import logging
 import time
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from .db_utils import get_db_connection, execute_query, execute_many
 from ..common.utils import get_date_str_for_coingecko # For dd-mm-yyyy format
 
