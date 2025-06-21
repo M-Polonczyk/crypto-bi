@@ -51,13 +51,13 @@ def fetch_blockchair_data(coin, endpoint_path, params=None):
         response = requests.get(url, params=params)
         response.raise_for_status()
         data = response.json()
-        logging.info(f"Successfully fetched data from {url} with params {params}")
+        logging.info("Successfully fetched data from %s with params %s", url, params)
         return data.get('data', [])
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching data from {url}: {e}")
+        logging.error("Error fetching data from %s: %s", url, e)
         return None
     except ValueError:
-        logging.error(f"Error decoding JSON from {url}")
+        logging.error("Error decoding JSON from %s", url)
         return None
 
 def ingest_recent_blocks(coin_symbol="bitcoin", date_str=None):
@@ -88,21 +88,22 @@ def ingest_recent_blocks(coin_symbol="bitcoin", date_str=None):
         create_blockchair_tables(conn)
         api_data = fetch_blockchair_data(coin_symbol.lower(), "blocks", params={"date": date_str})
         if not api_data:
-            logging.warning(f"No block data received from Blockchair for {coin_symbol} on {date_str}")
+            logging.warning("No block data received from Blockchair for %s on %s", coin_symbol, date_str)
             return
-        print(f"Fetched {len(api_data)} blocks for {coin_symbol} on {date_str}")
         blocks_to_insert = []
-        for block_hash, block_details in api_data.items(): # Blockchair blocks are dicts with hash as key
-            if not isinstance(block_details, dict): continue
-            blocks_to_insert.append((
-                block_details.get('id'),
-                coin_symbol.upper(),
-                block_hash,
-                block_details.get('time'),
-                block_details.get('transaction_count'),
-                block_details.get('size'),
-                block_details.get('difficulty')
-            ))
+
+        for quote in api_data:
+            for block_hash, block_details in quote.items():
+                if not isinstance(block_details, dict): continue
+                blocks_to_insert.append((
+                    block_details.get('id'),
+                    coin_symbol.upper(),
+                    block_hash,
+                    block_details.get('time'),
+                    block_details.get('transaction_count'),
+                    block_details.get('size'),
+                    block_details.get('difficulty')
+                ))
 
         if blocks_to_insert:
             insert_query = """
@@ -111,9 +112,10 @@ def ingest_recent_blocks(coin_symbol="bitcoin", date_str=None):
             ON CONFLICT (block_id, coin_symbol) DO NOTHING;
             """
             execute_many(conn, insert_query, blocks_to_insert)
-            logging.info(f"Ingested {len(blocks_to_insert)} blocks for {coin_symbol} on {date_str}.")
+            logging.info("Ingested %d blocks for %s on %s.", len(blocks_to_insert), coin_symbol, date_str)
         else:
-            logging.info(f"No new blocks to ingest for {coin_symbol} on {date_str}.")
+            logging.info("No new blocks to ingest for %s on %s.", coin_symbol, date_str)
+
 
     finally:
         if conn:
