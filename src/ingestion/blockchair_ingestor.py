@@ -38,7 +38,6 @@ def create_blockchair_tables(conn):
             PRIMARY KEY (tx_hash, coin_symbol)
         );
         """
-        # Add more tables as needed (e.g., for addresses, inputs/outputs from your project spec)
     ]
     for query in queries:
         execute_query(conn, query)
