@@ -1,6 +1,12 @@
+apache-airflow==3.0.2
 apache-airflow-providers-postgres>=6.2.0
 # dbt-postgres>=1.6.0
-requests
+requests>=2.32.0
 psycopg2-binary==2.9.10
 flask-appbuilder>=4.7.0
 cryptography
+sqlalchemy>=1.4.0,<2.0.0
+pydantic>=2.0.0
+alembic>=1.13.0
+python-dateutil>=2.8.0
+pytz>=2023.3
