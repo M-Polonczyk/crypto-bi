@@ -10,7 +10,7 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) # Add project root to path
 
-from src.ingestion.blockchair_ingestor import ingest_recent_blocks, ingest_transactions_for_blocks
+from src.ingestion.blockchair_ingestor import ingest
 from src.ingestion.coingecko_ingestor import ingest_coingecko_data_for_date
 from src.common.utils import get_yesterday_date_str
 
@@ -26,9 +26,7 @@ BLOCKCHAIN_COINS = ["bitcoin", "ethereum", "dogecoin"]
 def ingest_all_blockchair_data_callable():
     yesterday = get_yesterday_date_str()
     for coin in BLOCKCHAIN_COINS:
-        ingest_recent_blocks(coin_symbol=coin, date_str=yesterday)
-        # Consider how you want to link transactions to blocks or just fetch by date
-        ingest_transactions_for_blocks(coin_symbol=coin) # Uses date-based fetching
+        ingest(coin_symbol=coin, date_str=yesterday)
 
 def ingest_all_coingecko_data_callable():
     ingest_coingecko_data_for_date(COIN_GECKO_COIN_MAP)

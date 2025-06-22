@@ -11,20 +11,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3"
 REQUEST_DELAY_SECONDS = 3
 
-def create_coingecko_tables(conn):
-    """Creates tables for CoinGecko data if they don't exist."""
-    query = """
-    CREATE TABLE IF NOT EXISTS raw_market_prices_volumes (
-        coin_id VARCHAR(50),
-        price_date DATE,
-        price_usd NUMERIC,
-        volume_usd NUMERIC,
-        market_cap_usd NUMERIC,
-        PRIMARY KEY (coin_id, price_date)
-    );
-    """
-    execute_query(conn, query)
-    logging.info("CoinGecko tables ensured.")
 
 def fetch_coingecko_historical_price(coin_id, date_str_ddmmyyyy, vs_currency="usd"):
     """
@@ -75,7 +61,6 @@ def ingest_coingecko_data_for_date(coin_id_map, target_date_obj=None):
     if not conn:
         return
     try:
-        create_coingecko_tables(conn)
         prices_to_insert = []
 
         for symbol, cg_id in coin_id_map.items():
