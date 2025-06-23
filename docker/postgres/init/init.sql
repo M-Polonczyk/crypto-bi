@@ -44,12 +44,12 @@ GRANT ALL PRIVILEGES ON DATABASE airflow_db TO airflow_user;
 
 
 CREATE TABLE Coins (
-    coin_id VARCHAR(10) PRIMARY KEY, 
+    coin_symbol VARCHAR(10) PRIMARY KEY, 
     coin_name VARCHAR(50) UNIQUE NOT NULL
 );
 
 CREATE TABLE Blocks (
-    coin_id VARCHAR(10) NOT NULL,
+    coin_symbol VARCHAR(10) NOT NULL,
     block_id INT NOT NULL, 
     hash VARCHAR(64) UNIQUE NOT NULL,
     time_utc TIMESTAMP NOT NULL,
