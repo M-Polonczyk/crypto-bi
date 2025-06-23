@@ -50,16 +50,3 @@ CREATE TABLE Transactions (
     FOREIGN KEY (coin_symbol, block_height) REFERENCES Blocks(coin_symbol, block_height), 
     FOREIGN KEY (coin_symbol) REFERENCES Coins(coin_id) 
 );
-
-CREATE TABLE IF NOT EXISTS raw_blockchain_addresses (
-  address VARCHAR(255) PRIMARY KEY
-);
-
-CREATE TABLE IF NOT EXISTS raw_market_prices_volumes (
-  coin_id VARCHAR(50),
-  price_date DATE,
-  price_usd NUMERIC,
-  volume_usd NUMERIC,
-  market_cap_usd NUMERIC,
-  PRIMARY KEY (coin_id, price_date)
-);
