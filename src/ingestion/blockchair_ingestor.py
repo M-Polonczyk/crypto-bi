@@ -22,10 +22,10 @@ def fetch_blockchair_data(coin, endpoint_path, params=None):
         return data.get("data", [])
     except requests.exceptions.RequestException as e:
         logging.error("Error fetching data from %s: %s", url, e)
-        return None
+        return []
     except ValueError:
         logging.error("Error decoding JSON from %s", url)
-        return None
+        return []
 
 
 def ingest(coin_symbol="bitcoin", date_str=None, block_ids=None):
@@ -34,18 +34,7 @@ def ingest(coin_symbol="bitcoin", date_str=None, block_ids=None):
     This is a convenience function that calls the other two ingestion functions.
     """
 
-    def get_api_data(coin, endpoint, params=None):
-        api_data = fetch_blockchair_data(coin.lower(), endpoint, params=params)
-        if not api_data:
-            logging.warning(
-                "No block data received from Blockchair for %s on %s",
-                coin_symbol,
-                date_str,
-            )
-            return []
-        return api_data
-
-    def ingest_recent_blocks(coin_symbol="bitcoin", date_str=None):
+    def ingest_recent_blocks(coin_symbol="bitcoin"):
         """
         Ingests blocks for a given coin and date.
         Blockchair's block endpoint can be queried by date ranges or specific block heights.
@@ -63,8 +52,10 @@ def ingest(coin_symbol="bitcoin", date_str=None, block_ids=None):
             and you can also provide a `date=` parameter to filter blocks for a specific day.
             Example: `date=2023-01-01`
         """
-
-        api_data = get_api_data(coin_symbol, "blocks", params={"date": date_str})
+        nonlocal date_str
+        api_data = fetch_blockchair_data(
+            coin_symbol.lower(), "blocks", params={"date": date_str}
+        )
 
         blocks_to_insert = []
 
@@ -94,14 +85,15 @@ def ingest(coin_symbol="bitcoin", date_str=None, block_ids=None):
         Or query their /<coin>/transactions with `block_id=X` or `date=YYYY-MM-DD`
         The /<coin>/transactions endpoint with a `date` parameter will give transactions *confirmed* on that date.
         """
+        nonlocal date_str
         if block_ids is None:
             # Fallback if no block_ids provided - this part needs refinement for a real scenario
             logging.warning(
                 "No block_ids provided for transaction ingestion. Consider fetching transactions by date directly."
             )
 
-        api_data = get_api_data(
-            coin_symbol,
+        api_data = fetch_blockchair_data(
+            coin_symbol.lower(),
             "transactions",
             params={"date": date_str, "s": "time(asc)"},
         )
@@ -134,7 +126,7 @@ def ingest(coin_symbol="bitcoin", date_str=None, block_ids=None):
         return
 
     try:
-        blocks = ingest_recent_blocks(coin_symbol, date_str)
+        blocks = ingest_recent_blocks(coin_symbol)
         transactions = ingest_transactions_for_blocks(coin_symbol, block_ids)
         if not (transactions and blocks):
             logging.warning(
@@ -162,7 +154,6 @@ def ingest(coin_symbol="bitcoin", date_str=None, block_ids=None):
         execute_many(conn, insert_query, transactions)
         logging.info(f"Ingested {len(transactions)} transactions for {coin_symbol}.")
 
-        # --- TWÓJ INSERT DLA BLOCKS TABLE ---
         insert_query = """
         INSERT INTO Blocks (coin_id, block_id, hash, time_utc, guessed_miner, transaction_count, output_btc, output_usd, fee_btc, fee_usd, size_kb)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
