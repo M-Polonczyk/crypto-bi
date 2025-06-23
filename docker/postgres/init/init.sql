@@ -7,41 +7,7 @@ CREATE DATABASE airflow_db;
 GRANT ALL PRIVILEGES ON DATABASE app_db TO airflow_user;
 GRANT ALL PRIVILEGES ON DATABASE airflow_db TO airflow_user;
 
-
--- Create tables for app_db
 \c app_db;
-
-CREATE TABLE Coins (
-    coin_id VARCHAR(10) PRIMARY KEY, 
-    coin_name VARCHAR(50) UNIQUE NOT NULL
-);
-
-
-CREATE TABLE Blocks (
-    coin_id VARCHAR(10) NOT NULL,
-    block_id INT NOT NULL, 
-    hash VARCHAR(64) UNIQUE NOT NULL,
-    time_utc TIMESTAMP NOT NULL,
-    guessed_miner VARCHAR(255),
-    transaction_count INT NOT NULL,
-    output_btc DECIMAL(20, 8) NOT NULL,
-    output_usd DECIMAL(20, 2) NOT NULL,
-    fee_btc DECIMAL(20, 8) NOT NULL,
-    fee_usd DECIMAL(20, 2) NOT NULL,
-    size_kb DECIMAL(10, 3) NOT NULL,
-    PRIMARY KEY (block_id),
-    FOREIGN KEY (coin_id) REFERENCES Coins(coin_id)
-);
-
--- Create application database
-CREATE DATABASE app_db;
-
--- Create Airflow metadata database
-CREATE DATABASE airflow_db;
-
-GRANT ALL PRIVILEGES ON DATABASE app_db TO airflow_user;
-GRANT ALL PRIVILEGES ON DATABASE airflow_db TO airflow_user;
-
 
 CREATE TABLE Coins (
     coin_symbol VARCHAR(10) PRIMARY KEY, 
@@ -61,7 +27,7 @@ CREATE TABLE Blocks (
     fee_usd DECIMAL(20, 2) NOT NULL,
     size_kb DECIMAL(10, 3) NOT NULL,
     PRIMARY KEY (block_id),
-    FOREIGN KEY (coin_id) REFERENCES Coins(coin_id)
+    FOREIGN KEY (coin_symbol) REFERENCES Coins(coin_symbol)
 );
 
 
@@ -80,5 +46,15 @@ CREATE TABLE Transactions (
     is_coinbase BOOLEAN NOT NULL,
     UNIQUE (coin_symbol, transaction_hash),
     FOREIGN KEY (coin_symbol, block_height) REFERENCES Blocks(coin_symbol, block_height), 
-    FOREIGN KEY (coin_symbol) REFERENCES Coins(coin_id) 
+    FOREIGN KEY (coin_symbol) REFERENCES Coins(coin_symbol) 
+);
+
+
+CREATE TABLE IF NOT EXISTS raw_market_prices_volumes (
+  coin_symbol VARCHAR(50),
+  price_date DATE,
+  price_usd NUMERIC,
+  volume_usd NUMERIC,
+  market_cap_usd NUMERIC,
+  PRIMARY KEY (coin_symbol, price_date)
 );
