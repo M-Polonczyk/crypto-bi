@@ -147,19 +147,35 @@ def ingest(coin_symbol="bitcoin", date_str=None, block_ids=None):
             return
 
         insert_query = """
-        INSERT INTO raw_blockchain_transactions (
-            transaction_hash, coin_symbol, block_id, tx_time, fee_usd, output_total_usd,
-            input_count, output_count, size_bytes, is_coinbase
-        )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (tx_hash, coin_symbol) DO NOTHING;
+        INSERT INTO Transactions (id, coin_symbol, transaction_hash, block_height, input_count, output_count, time_utc, output_btc, output_usd, transaction_fee_usd, is_coinbase)
+        VALUES (DEFAULT, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (coin_symbol, transaction_hash) DO UPDATE SET
+            block_height = EXCLUDED.block_height,
+            input_count = EXCLUDED.input_count,
+            output_count = EXCLUDED.output_count,
+            time_utc = EXCLUDED.time_utc,
+            output_btc = EXCLUDED.output_btc,
+            output_usd = EXCLUDED.output_usd,
+            transaction_fee_usd = EXCLUDED.transaction_fee_usd,
+            is_coinbase = EXCLUDED.is_coinbase;
         """
         execute_many(conn, insert_query, transactions)
         logging.info(f"Ingested {len(transactions)} transactions for {coin_symbol}.")
+
+        # --- TWÓJ INSERT DLA BLOCKS TABLE ---
         insert_query = """
-        INSERT INTO raw_blockchain_blocks (block_id, coin_symbol, block_hash, block_time, transaction_count, size_bytes, difficulty)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (block_id, coin_symbol) DO NOTHING;
+        INSERT INTO Blocks (coin_id, block_id, hash, time_utc, guessed_miner, transaction_count, output_btc, output_usd, fee_btc, fee_usd, size_kb)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (coin_id, block_id) DO UPDATE SET
+            hash = EXCLUDED.hash,
+            time_utc = EXCLUDED.time_utc,
+            guessed_miner = EXCLUDED.guessed_miner,
+            transaction_count = EXCLUDED.transaction_count,
+            output_btc = EXCLUDED.output_btc,
+            output_usd = EXCLUDED.output_usd,
+            fee_btc = EXCLUDED.fee_btc,
+            fee_usd = EXCLUDED.fee_usd,
+            size_kb = EXCLUDED.size_kb;
         """
         execute_many(conn, insert_query, blocks)
         logging.info(
