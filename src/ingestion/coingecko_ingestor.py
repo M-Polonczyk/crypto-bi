@@ -85,10 +85,10 @@ def ingest_coingecko_data_for_date(coin_id_map, target_date_obj=None):
                 volume = md.get("total_volume", {}).get("usd")
                 market_cap = md.get("market_cap", {}).get("usd")
 
-                if price is not None and volume is not None:
+                if price is not None and volume is not None and market_cap is not None:
                     prices_to_insert.append(
                         (
-                            cg_id,  # Store CoinGecko ID for consistency
+                            symbol,
                             price_date_sql,
                             price,
                             volume,
@@ -97,7 +97,7 @@ def ingest_coingecko_data_for_date(coin_id_map, target_date_obj=None):
                     )
                 else:
                     logging.warning(
-                        f"Missing price/volume data for {cg_id} on {date_str_coingecko}. Price: {price}, Volume: {volume}"
+                        f"Missing price/volume/market_cap data for {cg_id} on {date_str_coingecko}. Price: {price}, Volume: {volume}, Market Cap: {market_cap}"
                     )
             else:
                 logging.warning(
@@ -106,9 +106,9 @@ def ingest_coingecko_data_for_date(coin_id_map, target_date_obj=None):
 
         if prices_to_insert:
             insert_query = """
-            INSERT INTO raw_market_prices_volumes (coin_id, price_date, price_usd, volume_usd, market_cap_usd)
+            INSERT INTO raw_market_prices_volumes (coin_symbol, price_date, price_usd, volume_usd, market_cap_usd)
             VALUES (%s, %s, %s, %s, %s)
-            ON CONFLICT (coin_id, price_date) DO UPDATE SET
+            ON CONFLICT (coin_symbol, price_date) DO UPDATE SET
                 price_usd = EXCLUDED.price_usd,
                 volume_usd = EXCLUDED.volume_usd,
                 market_cap_usd = EXCLUDED.market_cap_usd;
@@ -126,7 +126,6 @@ def ingest_coingecko_data_for_date(coin_id_map, target_date_obj=None):
 
 
 if __name__ == "__main__":
-    # Example usage (you would call these from an Airflow DAG)
     logging.info("--- Starting CoinGecko Ingestion Script ---")
     coin_map = {"BTC": "bitcoin", "ETH": "ethereum", "DOGE": "dogecoin"}
     # Ingest for yesterday

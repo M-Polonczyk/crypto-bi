@@ -1,5 +1,6 @@
 import requests
 import logging
+import time
 from datetime import datetime
 from src.ingestion.db_utils import get_db_connection, execute_query, execute_many
 from src.common.utils import get_yesterday_date_str
@@ -9,13 +10,40 @@ logging.basicConfig(
 )
 
 BLOCKCHAIR_BASE_URL = "https://api.blockchair.com"
+COIN_SYMBOL_MAP = {
+    "bitcoin": "BTC",
+    "ethereum": "ETH",
+    "dogecoin": "DOGE",
+}
+
+
+def safe_float(value, default=0.0, log_msg=""):
+    """Bezpiecznie konwertuje wartość na float, obsługując None, ValueError i TypeError."""
+    try:
+        return float(value) if value is not None else default
+    except (ValueError, TypeError):
+        logging.warning(
+            f"Nie udało się skonwertować wartości '{value}' na float. {log_msg}. Ustawiono na {default}."
+        )
+        return default
+
+
+def safe_int(value, default=0, log_msg=""):
+    """Bezpiecznie konwertuje wartość na int, obsługując None, ValueError i TypeError."""
+    try:
+        return int(value) if value is not None else default
+    except (ValueError, TypeError):
+        logging.warning(
+            f"Nie udało się skonwertować wartości '{value}' na int. {log_msg}. Ustawiono na {default}."
+        )
+        return default
 
 
 def fetch_blockchair_data(coin, endpoint_path, params=None):
     """Fetches data from a Blockchair endpoint."""
     url = f"{BLOCKCHAIR_BASE_URL}/{coin}/{endpoint_path}"
     try:
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, timeout=10)
         response.raise_for_status()
         data = response.json()
         logging.info("Successfully fetched data from %s with params %s", url, params)
@@ -27,57 +55,44 @@ def fetch_blockchair_data(coin, endpoint_path, params=None):
         logging.error("Error decoding JSON from %s", url)
         return []
 
-
-def ingest(coin_symbol="bitcoin", date_str=None, block_ids=None):
+def ingest(coin_symbol="bitcoin", date_str=None):
     """
-    Main ingestion function to ingest both blocks and transactions for a given coin and date.
-    This is a convenience function that calls the other two ingestion functions.
+    Główna funkcja ingestująca bloki i transakcje dla danej kryptowaluty i daty.
     """
 
-    def ingest_recent_blocks(coin_symbol="bitcoin"):
-        """
-        Ingests blocks for a given coin and date.
-        Blockchair's block endpoint can be queried by date ranges or specific block heights.
-        Example: Fetch blocks from a specific day.
-        Note: Blockchair API might not directly support 'give me all blocks for this date' easily.
-            Often, you'd iterate through block heights or use their dump files for full history.
-            This is a simplified example focusing on 'recent' data or a specific query.
-            For a daily DAG, you might query for blocks within a specific time window if the API supports it.
-            A common pattern for 'yesterday's blocks' is to query blocks with time in that range.
-            Let's assume we query blocks with a time close to the target date_str if direct date filter is hard.
-            Or we might need to use their dashboard API which allows time-based queries for some stats.
-            For a truly robust solution, you'd explore the advanced query capabilities of Blockchair.
-            Let's simplify for now and assume we can get a list of blocks.
-            Blockchair's /<coin>/blocks endpoint can take `s=time(asc)` and `limit=X`
-            and you can also provide a `date=` parameter to filter blocks for a specific day.
-            Example: `date=2023-01-01`
-        """
-        nonlocal date_str
+    mapped_coin_symbol = COIN_SYMBOL_MAP.get(coin_symbol.lower(), coin_symbol.upper())
+
+    def ingest_recent_blocks():
+        nonlocal date_str, coin_symbol
+        logging.info(
+            "Ingesting recent blocks for %s on %s...", coin_symbol, date_str
+        )
         api_data = fetch_blockchair_data(
-            coin_symbol.lower(), "blocks", params={"date": date_str}
+            coin_symbol.lower(), "blocks", params={"date": date_str, "limit": 100}
         )
 
         blocks_to_insert = []
-
-        for quote in api_data:
-            if not isinstance(quote, dict):
+        for block_data in api_data:
+            if not isinstance(block_data, dict):
                 continue
             blocks_to_insert.append(
                 (
-                    quote.get("id"),
-                    coin_symbol.upper(),
-                    quote.get("hash"),
-                    quote.get("time"),
-                    quote.get("transaction_count"),
-                    quote.get("size"),
-                    quote.get("difficulty"),
-                    quote.get("guessed_miner", "Unknown"),
+                    safe_int(block_data.get("id")),
+                    mapped_coin_symbol,
+                    block_data.get("hash"),
+                    block_data.get("time"),
+                    block_data.get("guessed_miner", "Unknown"),
+                    safe_int(block_data.get("transaction_count")),
+                    safe_float(block_data.get("output_total")) / 100_000_000,
+                    safe_float(block_data.get("output_total_usd", 0)),
+                    safe_float(block_data.get("fee_total")) / 100_000_000,
+                    safe_float(block_data.get("fee_total_usd", 0)),
+                    safe_float(block_data.get("size", 0)) / 1024,
                 )
             )
-
         return blocks_to_insert
 
-    def ingest_transactions_for_blocks(coin_symbol="bitcoin", block_ids=None):
+    def ingest_transactions_for_blocks(block_ids=None):
         """
         Ingests transactions for a given list of block IDs.
         This is more efficient if you first get block_ids for a day, then fetch their transactions.
@@ -85,79 +100,66 @@ def ingest(coin_symbol="bitcoin", date_str=None, block_ids=None):
         Or query their /<coin>/transactions with `block_id=X` or `date=YYYY-MM-DD`
         The /<coin>/transactions endpoint with a `date` parameter will give transactions *confirmed* on that date.
         """
-        nonlocal date_str
+        nonlocal date_str, coin_symbol
+
         if block_ids is None:
             # Fallback if no block_ids provided - this part needs refinement for a real scenario
             logging.warning(
                 "No block_ids provided for transaction ingestion. Consider fetching transactions by date directly."
             )
 
+        transactions_to_insert = []
         api_data = fetch_blockchair_data(
             coin_symbol.lower(),
             "transactions",
-            params={"date": date_str, "s": "time(asc)"},
+            params={"date": date_str, "limit": 100},
         )
 
-        transactions_to_insert = []
-        for quote in api_data:
-            if not isinstance(quote, dict):
+        for tx_data in api_data:
+            if not isinstance(tx_data, dict):
                 continue
+
+            block_id = tx_data.get("block_id")
+
+            if block_id is None:
+                logging.warning("skipping transaction with missing block_id")
+                continue
+
+            output_btc_tx = safe_float(tx_data.get("output_total")) / 100_000_000
+            output_usd_tx = safe_float(tx_data.get("output_total_usd", 0))
+            transaction_fee_usd_tx = safe_float(tx_data.get("fee_usd", 0))
+            input_count_tx = safe_int(tx_data.get("input_count"))
+            output_count_tx = safe_int(tx_data.get("output_count"))
+
             transactions_to_insert.append(
                 (
-                    quote.get("hash"),
-                    coin_symbol.upper(),
-                    quote.get("id"),
-                    quote.get("time"),
-                    quote.get("fee_usd"),
-                    quote.get("output_total_usd"),
-                    quote.get("input_count"),
-                    quote.get("output_count"),
-                    quote.get("size"),
-                    quote.get("is_coinbase"),
+                    tx_data.get("hash"),  # transaction_hash
+                    mapped_coin_symbol,  # coin_symbol
+                    safe_int(block_id),  # block_height
+                    input_count_tx,  # input_count
+                    output_count_tx,  # output_count
+                    tx_data.get("time"),
+                    output_btc_tx,  # output_btc
+                    output_usd_tx,  # output_usd
+                    transaction_fee_usd_tx,  # transaction_fee_usd
+                    tx_data.get("is_coinbase", False),
                 )
             )
         return transactions_to_insert
 
     if date_str is None:
-        date_str = get_yesterday_date_str()  # YYYY-MM-DD
+        date_str = get_yesterday_date_str()
 
     conn = get_db_connection()
     if not conn:
         return
 
     try:
-        blocks = ingest_recent_blocks(coin_symbol)
-        transactions = ingest_transactions_for_blocks(coin_symbol, block_ids)
-        if not (transactions and blocks):
-            logging.warning(
-                "No data to ingest for %s on %s. Blocks: %s, Transactions: %s",
-                coin_symbol,
-                date_str,
-                blocks,
-                transactions,
-            )
-            return
-
-        insert_query = """
-        INSERT INTO Transactions (id, coin_symbol, transaction_hash, block_height, input_count, output_count, time_utc, output_btc, output_usd, transaction_fee_usd, is_coinbase)
-        VALUES (DEFAULT, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (coin_symbol, transaction_hash) DO UPDATE SET
-            block_height = EXCLUDED.block_height,
-            input_count = EXCLUDED.input_count,
-            output_count = EXCLUDED.output_count,
-            time_utc = EXCLUDED.time_utc,
-            output_btc = EXCLUDED.output_btc,
-            output_usd = EXCLUDED.output_usd,
-            transaction_fee_usd = EXCLUDED.transaction_fee_usd,
-            is_coinbase = EXCLUDED.is_coinbase;
-        """
-        execute_many(conn, insert_query, transactions)
-        logging.info(f"Ingested {len(transactions)} transactions for {coin_symbol}.")
-
-        insert_query = """
-        INSERT INTO Blocks (coin_id, block_id, hash, time_utc, guessed_miner, transaction_count, output_btc, output_usd, fee_btc, fee_usd, size_kb)
+        blocks = ingest_recent_blocks()
+        insert_blocks_query = """
+        INSERT INTO Blocks (block_id, coin_symbol, hash, time_utc, guessed_miner, transaction_count, output_btc, output_usd, fee_btc, fee_usd, size_kb)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (coin_id, block_id) DO UPDATE SET
+        ON CONFLICT (block_id, coin_symbol) DO UPDATE SET -- Poprawiona klauzula ON CONFLICT na klucz złożony
             hash = EXCLUDED.hash,
             time_utc = EXCLUDED.time_utc,
             guessed_miner = EXCLUDED.guessed_miner,
@@ -168,16 +170,38 @@ def ingest(coin_symbol="bitcoin", date_str=None, block_ids=None):
             fee_usd = EXCLUDED.fee_usd,
             size_kb = EXCLUDED.size_kb;
         """
-        execute_many(conn, insert_query, blocks)
+        execute_many(conn, insert_blocks_query, blocks)
         logging.info(
             "Ingested %d blocks for %s on %s.",
             len(blocks),
             coin_symbol,
             date_str,
         )
+        transactions = ingest_transactions_for_blocks()
+        insert_transactions_query = """
+        INSERT INTO Transactions (transaction_hash, coin_symbol, block_height, input_count, output_count, time_utc, output_btc, output_usd, transaction_fee_usd, is_coinbase)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (coin_symbol, transaction_hash) DO UPDATE SET
+            block_height = EXCLUDED.block_height,
+            input_count = EXCLUDED.input_count,
+            output_count = EXCLUDED.output_count,
+            time_utc = EXCLUDED.time_utc,
+            output_btc = EXCLUDED.output_btc,
+            output_usd = EXCLUDED.output_usd,
+            transaction_fee_usd = EXCLUDED.transaction_fee_usd,
+            is_coinbase = EXCLUDED.is_coinbase;
+        """
+        execute_many(conn, insert_transactions_query, transactions)
+        logging.info(
+            "Ingested %d transactions for %s on %s.",
+            len(transactions),
+            coin_symbol,
+            date_str,
+        )
 
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 
 if __name__ == "__main__":
@@ -188,6 +212,5 @@ if __name__ == "__main__":
     for coin in ["bitcoin"]:
         logging.info(f"Ingesting blocks for {coin} for date {yesterday}...")
         ingest(coin_symbol=coin, date_str=yesterday)
-        logging.info(f"Ingesting transactions for {coin} for date {yesterday}...")
 
     logging.info("--- Blockchair Ingestion Script Finished ---")
