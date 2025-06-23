@@ -11,29 +11,44 @@ GRANT ALL PRIVILEGES ON DATABASE airflow_db TO airflow_user;
 -- Create tables for app_db
 \c app_db;
 
-CREATE TABLE IF NOT EXISTS raw_blockchain_blocks (
-  block_id BIGINT,
-  coin_symbol VARCHAR(10),
-  block_hash VARCHAR(255) UNIQUE,
-  block_time TIMESTAMP,
-  transaction_count INT,
-  size_bytes INT,
-  difficulty NUMERIC,
-  PRIMARY KEY (block_id, coin_symbol)
+CREATE TABLE Coins (
+    coin_id VARCHAR(10) PRIMARY KEY, 
+    coin_name VARCHAR(50) UNIQUE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS raw_blockchain_transactions (
-  tx_hash VARCHAR(255),
-  coin_symbol VARCHAR(10),
-  block_id BIGINT,
-  tx_time TIMESTAMP,
-  fee_usd NUMERIC,
-  output_total_usd NUMERIC,
-  input_count INT,
-  output_count INT,
-  size_bytes INT,
-  is_coinbase BOOLEAN,
-  PRIMARY KEY (tx_hash, coin_symbol)
+
+CREATE TABLE Blocks (
+    coin_id VARCHAR(10) NOT NULL,
+    block_id INT NOT NULL, 
+    hash VARCHAR(64) UNIQUE NOT NULL,
+    time_utc TIMESTAMP NOT NULL,
+    guessed_miner VARCHAR(255),
+    transaction_count INT NOT NULL,
+    output_btc DECIMAL(20, 8) NOT NULL,
+    output_usd DECIMAL(20, 2) NOT NULL,
+    fee_btc DECIMAL(20, 8) NOT NULL,
+    fee_usd DECIMAL(20, 2) NOT NULL,
+    size_kb DECIMAL(10, 3) NOT NULL,
+    PRIMARY KEY (block_id),
+    FOREIGN KEY (coin_id) REFERENCES Coins(coin_id)
+);
+
+
+CREATE TABLE Transactions (
+    id SERIAL PRIMARY KEY,
+    coin_symbol VARCHAR(10) NOT NULL, 
+    transaction_hash VARCHAR(64) NOT NULL,
+    block_height INT NOT NULL,
+    input_count INT NOT NULL,
+    output_count INT NOT NULL,
+    time_utc TIMESTAMP NOT NULL,
+    output_btc DECIMAL(20, 8) NOT NULL,
+    output_usd DECIMAL(20, 2) NOT NULL,
+    transaction_fee_usd DECIMAL(20, 2) NOT NULL,
+    is_coinbase BOOLEAN NOT NULL,
+    UNIQUE (coin_symbol, transaction_hash),
+    FOREIGN KEY (coin_symbol, block_height) REFERENCES Blocks(coin_symbol, block_height), 
+    FOREIGN KEY (coin_symbol) REFERENCES Coins(coin_id) 
 );
 
 CREATE TABLE IF NOT EXISTS raw_blockchain_addresses (
